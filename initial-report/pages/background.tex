@@ -1,0 +1,47 @@
+\section{Background}
+\subsection{Server}
+The server will host all the game logic, and will take input from the client, update its internal state, and propagate the changes to all the other clients.
+This section of the project will require managing a complex state, message passing and gracefully handling failure when network conditions cause clients to disconnect unexpectedly.
+
+\tikzset{
+    diagram/.style={
+        rectangle, 
+        rounded corners, 
+        draw=black, very thick,
+        text width=10em, 
+        minimum height=3em, 
+        text centered},
+}
+\vspace*{0.8cm}
+\begin{center}
+\begin{tikzpicture}[framed]
+    \node[diagram, outer sep = 3pt] (server)     at (4, 0.0) {Server};
+    \node[diagram, outer sep = 3pt] (client)     at (0,-5.5) {Client};
+    \node[diagram, outer sep = 3pt] (ai)         at (8,-5.5) {AI};
+
+    \node[diagram, minimum height=1em, outer sep=3pt]    (hsqml)   at (0, -7.1) {HsQML};
+    \node[diagram, minimum height=1em, outer sep=3pt]  (qtquick)   at (0, -8.5) {QtQuick};
+    \node[diagram, minimum height=1em, outer sep=3pt]  (network)   at (4, -1.5) {Network};
+    \node[diagram, minimum height=1em, outer sep=3pt] (network2)   at (0, -3.8) {Network};
+    \node[diagram, minimum height=1em, outer sep=3pt] (network3)   at (8, -3.8) {Network};
+
+    \draw[thick, <->]   (server.south) -- (network.north);
+    \draw[thick, <->]   (client.north) -- (network2.south);
+    \draw[thick, <->] (network2.north) -- (network.south west);
+    \draw[thick, <->] (network3.north) -- (network.south east);
+    \draw[thick, <->]   (client.south) -- (hsqml.north);
+    \draw[thick, <->]    (hsqml.south) -- (qtquick);
+    \draw[thick, <->] (network3.south) -- (ai.north);
+\end{tikzpicture}
+\end{center}
+\vspace*{0.5cm}
+
+\subsection{Client}
+The client code will be relatively simple, just taking simple inputs from the user, and passing it to the server, and interpreting the servers responses.
+It will, however, take significant effort to make a good looking GUI, potentially featuring animations and different themes.
+Due to Haskell having immutable state by default, which is poor for many graphics libraries, I have decided to use the QtQuick graphics library, which uses JSON to describe a UI\@.
+The interaction between Haskell and QtQuick is minimal and easy to use.
+\subsection{AI}
+The AI could potentially be a significant part of this project, based on time constraints.
+There have been lots of papers on this subject which will allow for multiple different approaches.
+A rule based AI\cite{watson2008} could be a good starting point, after which more advanced techniques could be implemented, such as neural networks\cite{teofilo2011}, and statistical models\cite{billings2002}.

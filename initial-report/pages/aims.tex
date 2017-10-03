@@ -1,0 +1,24 @@
+\section{Aims \& Objectives}
+
+\begin{itemize}
+\item Investigating the capability of Haskell, a functional programming language, in programming networks, stateful code, and AI
+\item Creating a rich GUI with a high level toolkit, allowing modular replacement of assets at users request
+\item Investigating a number of different Artificial Intelligence programming paradigms for poker
+\end{itemize}
+Motivations behind the decision to use Haskell include:
+\begin{itemize}
+\item A strong type system, allowing rapid development and refactoring
+\item Functional programming, which encourages terse, expressive code
+\item Simple and safe multi threading, due to immutable by default data types, requiring very little change to application code to take advantage of multi-core processes
+\item High level support for managing complex state and other side effects, using monads\cite{benton2000}
+\item High level support for updating and viewing nested state, using the ``lens'' library and lenses paradigm\cite{bohannon2006}
+\item A rich library system allowing massive amounts of duplicate code to be avoided
+\end{itemize}
+Significant libraries to be used:
+\begin{itemize}
+\item transformers-This library provides a high level interface for managing stateful code, using monad transformers, and implicit parameters
+\item lens-This library allows painless updating of deeply nested structures, creating very expressive and concise code
+\item network-This library has a socket interface, and will be used for the client and server, offering lots of power, whilst having a very simple interface
+\item hsqml-A Haskell interface to the QtQuick graphics library, which allows fast prototyping with JSON syntax
+\item binary-A library for encoding arbitrary data types into a binary format for efficient message passing between client and server
+\end{itemize}
