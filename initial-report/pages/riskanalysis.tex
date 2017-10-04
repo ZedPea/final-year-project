@@ -1,14 +1,20 @@
 \section{Risk Analysis}
 
+In the below table, severity means the impact times the likelihood.
+
+\begin{adjustwidth}{-7.5em}{}
+
 \begin{center}
-    \begin{tabular}{l l}
+    \begin{tabular}{l l l l l l}
     \toprule
-    Risk                & Mitigation                                    \\
+    Risk                & Impact    & Likelihood    & Severity      & Mitigation                    & Recovery              \\
     \midrule
-    Hard drive failure  & Backups on another machine                    \\ \addlinespace
-    Act of God, Fire    & Off site backups on GitHub                    \\ \addlinespace
-    Running out of time & Focus on core functionality before refining   \\ \addlinespace
-    AI grows sentient   & oh shit                                       \\
+    Hard drive failure  & High      & High          & HH            & Backups on another machine    & Restore from backups  \\ \addlinespace
+    Act of God, Fire    & High      & Low           & HL            & Off site backups on GitHub    & Restore from GitHub   \\ \addlinespace
+    Running out of time & Medium    & Medium        & MM            & Focus on core functionality   & Skip ambitious parts  \\ \addlinespace
+    AI grows sentient   & Nuclear   & Tiny          & NT            & brainlet                      & N/A                   \\
     \bottomrule
     \end{tabular}
 \end{center}
+
+\end{adjustwidth}
