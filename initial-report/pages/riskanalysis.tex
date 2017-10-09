@@ -2,19 +2,18 @@
 
 In the below table, severity means the impact times the likelihood.
 
-\begin{adjustwidth}{-7.5em}{}
-
-\begin{center}
-    \begin{tabular}{l l l l l l}
-    \toprule
-    Risk                & Impact    & Likelihood    & Severity      & Mitigation                    & Recovery              \\
-    \midrule
-    Hard drive failure  & High      & High          & High          & Backups on another machine    & Restore from backups  \\ \addlinespace
-    Act of God, Fire    & High      & Low           & Medium        & Off site backups on GitHub    & Restore from GitHub   \\ \addlinespace
-    Running out of time & Medium    & Medium        & Medium        & Focus on core functionality   & Skip ambitious parts  \\ \addlinespace
-    Buggy Code          & Medium    & High          & Quite High    & Automated testing             & Fix bugs when flagged \\
-    \bottomrule
-    \end{tabular}
-\end{center}
-
+\begin{adjustwidth}{-8em}{}
+\begin{tabular}{l l l l l l}
+\toprule
+Risk                & Impact    & Likelihood    & Severity      & Mitigation                    & Recovery              \\
+\midrule
+Hard Drive Failure  & High      & High          & High          & Backups on another machine    & Restore from backups  \\ \addlinespace
+Act Of God, Fire    & High      & Low           & Medium        & Off site backups on GitHub    & Restore from GitHub   \\ \addlinespace
+Running Out Of Time & Medium    & Medium        & Medium        & Focus on core functionality   & Skip ambitious parts  \\ \addlinespace
+Buggy Code          & Medium    & High          & Quite High    & Automated testing             & Fix bugs when flagged \\ \addlinespace
+Code Complexity     & Medium    & Medium        & Medium        & Loosely coupled code          & Split into sub modules\\ \addlinespace
+Poor Performance    & Medium    & Low           & Quite Low     & Constantly test performance   & Rewrite slow code     \\ \addlinespace
+Unexpected Tasks    & Medium    & Medium        & Medium        & Careful planning              & Alter time plan       \\
+\bottomrule
+\end{tabular}
 \end{adjustwidth}

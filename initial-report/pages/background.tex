@@ -3,6 +3,38 @@
 The server will host all the game logic, and will take input from the client, update its internal state, and propagate the changes to all the other clients.
 This section of the project will require managing a complex state, message passing and gracefully handling failure when network conditions cause clients to disconnect unexpectedly.
 
+Generation of random numbers is an interesting topic in Poker. Computers cannot generate true random numbers, and instead have multiple methods to create ``Pseudo Random Number Generators''.
+These are intended to be implemented in such a way that they are indistinguishable from true randomness.
+
+However, depending on the implementation, they can be insecure, allowing users to calculate later numbers after observing those that have come before.
+Sometimes, the user can ensure they get the random number they wish for by exploiting the timing of their actions.
+
+I will approach this issue by potentially using multiple sources of random numbers, and picking suits and values separately. 
+These methods will be examined to see how they affect the cyclic nature of random number generation, along with card distributions.
+
+Utilising multiple decks behind the scenes rather than one reused deck could also make the software harder to manipulate by users.
+\subsection{Client}
+The client code will be relatively simple, just taking simple inputs from the user, and passing it to the server, and interpreting the servers responses.
+It will, however, take significant effort to make a good looking GUI, potentially featuring animations and different themes.
+Due to Haskell having immutable state by default, which is poor for many graphics libraries, I have decided to use the QtQuick graphics library, which uses JSON to describe a UI\@.
+The interaction between Haskell and QtQuick is minimal and easy to use.
+\subsection{AI}
+As mentioned, AI is a very interesting subject in poker, which has been researched heavily. 
+The most advanced Artificial Intelligence algorithms are currently approaching pro level game play.
+Multiple different approaches will be attempted, such as a rule based AI\cite{watson2008} to begin with.
+After, more advanced techniques could be implemented, such as Bayesian probabilities\cite{billings2002}, or neural networks\cite{teofilo2011}.
+
+These can be examined to see their effectiveness, measured using the formula:
+\begin{equation}
+\cfrac{\text{Profit}/\text{Big Blind}}{\text{Hands}/100}
+\end{equation}
+
+The AI will be designed to be modular, so the server operator can run AI players to supplement the normal players, and the users can locally run the AI to improve their game play, along with a local server which hosts the actual game play.
+
+It will function the same as the client, except instead of taking input from a user, it will of course calculate its own input. It will interface with the server over the network normally.
+
+Below is a diagram indicating the design and interface of the programs. The smaller boxes indicate libraries that will be utilised.
+
 \tikzset{
     diagram/.style={
         rectangle, 
@@ -34,14 +66,3 @@ This section of the project will require managing a complex state, message passi
     \draw[thick, <->] (network3.south) -- (ai.north);
 \end{tikzpicture}
 \end{center}
-\vspace*{0.5cm}
-
-\subsection{Client}
-The client code will be relatively simple, just taking simple inputs from the user, and passing it to the server, and interpreting the servers responses.
-It will, however, take significant effort to make a good looking GUI, potentially featuring animations and different themes.
-Due to Haskell having immutable state by default, which is poor for many graphics libraries, I have decided to use the QtQuick graphics library, which uses JSON to describe a UI\@.
-The interaction between Haskell and QtQuick is minimal and easy to use.
-\subsection{AI}
-The AI could potentially be a significant part of this project, based on time constraints.
-There have been lots of papers on this subject which will allow for multiple different approaches.
-A rule based AI\cite{watson2008} could be a good starting point, after which more advanced techniques could be implemented, such as neural networks\cite{teofilo2011}, and statistical models\cite{billings2002}.
