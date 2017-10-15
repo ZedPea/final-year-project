@@ -5,10 +5,11 @@
 \usepackage{booktabs}
 \usepackage{pgfgantt}
 \usepackage[strict]{changepage}
-\usepackage[nottoc,numbib]{tocbibind}
 \usepackage[none]{hyphenat}
 \usepackage{amsmath}
+\usepackage[style=authoryear,backend=biber]{biblatex}
 
+\addbibresource{pages/bibliography.bib}
 \usetikzlibrary{backgrounds}
 \setcounter{tocdepth}{1}
 \setcounter{secnumdepth}{1}
@@ -40,7 +41,6 @@
 
 \input{pages/bibliography.tex}
 
-\bibliographystyle{plain}
-\bibliography{bibliography}
+\printbibliography[heading=bibintoc]
 
 \end{document}
