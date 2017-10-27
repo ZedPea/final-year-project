@@ -6,12 +6,22 @@
 \usepackage[style=authoryear,backend=biber]{biblatex}
 \usepackage{graphicx}
 \usepackage{subcaption}
+\usepackage{booktabs}
+\usepackage{listings}
+
+\newcommand{\codelocation}{../../../../Haskell/networked-poker}
 
 \addbibresource{sections/bibliography.bib}
 \setcounter{tocdepth}{1}
 \setcounter{secnumdepth}{1}
 
 \begin{document}
+
+\lstset{language=Haskell,
+        frame=single,
+        captionpos=b,
+        basicstyle=\footnotesize
+}
 
 \input{sections/titlepage.tex}
 

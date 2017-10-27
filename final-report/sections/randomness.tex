@@ -1,1 +1,90 @@
 \section{Randomness and Shuffling}
+In the game of poker, the house does not wager against players, unlike other 
+popular casino games, such as blackjack or roulette, but instead the usual 
+method for online poker companies and indeed poker tables in real life to make 
+money is the rake. 
+
+The implementation of the rake varies between casinos and online poker
+software. Some common ones are in the below table.
+
+\begin{center}
+    \begin{tabular}{l l}
+    \toprule
+    Mechanism           & Description                                               \\
+    \midrule
+    Pot Rake            & Percentage taken from the pot, per hand or betting round  \\ \addlinespace
+    Dead Drop           & Fee paid by the player with the dealer button each hand   \\ \addlinespace
+    Timed Rake          & Set fee collected every set interval of time              \\ \addlinespace
+    Fixed Fee           & Fixed fee per hand                                        \\ \addlinespace
+    Tournament Fee      & Entry fee to participate in poker tournaments             \\ \addlinespace
+    Subscription Fees   & Players are charged a subscription fee to play            \\
+    \bottomrule
+    \end{tabular}
+\end{center}
+
+Finally, some games are rake free, instead generating revenue by driving
+traffic to more profitable businesses. The software developed that this paper
+is discussing is also rake free, due to being only for academic purposes.
+
+However, despite companies being able to generate revenue in these ways, the
+implementation of random number generation in poker software is a topic of
+some interest. Possible issues include rogue employees writing malicious
+code to give them or people connected to them beneficial cards, faulty code
+allowing the random number generation to be exploited, and other schemes, such
+as giving newer players or failing players better cards, to encourage them to 
+continue using the companies platform, and generating revenue through rakes.
+
+For these reasons, random number generation has been analysed and multiple
+different shuffling algorithms or card picking algorithms have been
+developed and contrasted for possible weaknesses. Two obvious approaches to 
+selecting cards are:
+
+\begin{itemize}
+    \item Storing an array of all the cards and indexing this array in some way to take a card
+    \item Shuffling an array in some way and taking the top item
+\end{itemize}
+
+Multiple versions of both these algorithms have been implemented, using
+different sources of randomness. In Haskell, the class keyword is analogous
+to an interface in Object Orientated Languages, it defines functions that
+an instance of the class must implement. Using the below class, multiple
+implementations of card picking algorithms can be developed, and very simply
+tested by calling the same functions, and only changing the instance used.
+
+\vbox{%
+\lstinputlisting[firstline=19, lastline=27, caption=Drawable]
+                {\codelocation/server/src/lib/DrawCard.hs}
+}
+
+In the above code, the internal cards are encapsulated in a Deck, which
+prevents users of the module modifying them, as the type constructor is not
+exported. This means we can maintain state of the deck that users pass in
+without having to resort to non Haskell-like code such as top level mutable
+IORefs and unsafePerformIO\@.
+
+The function initDeck returns an IO instance of Drawable. This function is 
+used to initiate the deck, which involves a transform of some form upon the 
+full deck. In the case of a Knuth shuffle, this would be shuffling the deck 
+using the Knuth method \parencite{knuth1997}.
+
+The function draw takes an instance of Drawable that was obtained from the
+initDeck function or another invocation of draw, and draws a card in some way.
+It then returns the card, and the new state of the instance. In the case of
+a shuffle, this would generally just involve taking the first card of the
+deck. Both these functions need to be in the IO Monad as generating random
+numbers without a fixed seed involves IO\@.
+
+Below are two implementations of the Drawable class, the first takes
+random indexes from a deck and returns that card, the second uses the Knuth
+shuffle to shuffle the deck then takes the top item from the deck.
+\newline
+
+\vbox{%
+\lstinputlisting[firstline=29, lastline=41, caption=RandomIndex]
+                {\codelocation/server/src/lib/DrawCard.hs}
+}
+
+\vbox{%
+\lstinputlisting[firstline=43, lastline=64, caption=KnuthShuffle]
+                {\codelocation/server/src/lib/DrawCard.hs}
+}
