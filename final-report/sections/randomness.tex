@@ -44,47 +44,62 @@ selecting cards are:
     \item Shuffling an array in some way and taking the top item
 \end{itemize}
 
+\newpage
+
 Multiple versions of both these algorithms have been implemented, using
-different sources of randomness. In Haskell, the class keyword is analogous
-to an interface in Object Orientated Languages, it defines functions that
-an instance of the class must implement. Using the below class, multiple
-implementations of card picking algorithms can be developed, and very simply
-tested by calling the same functions, and only changing the instance used.
+different sources of randomness. Also developed is a GUI which can be launched
+when the `--chooseshuffle' argument is given to the server, which allows
+the card picking algorithm and random source to be altered mid game. 
 
-\vbox{%
-\lstinputlisting[firstline=19, lastline=27, caption=Drawable]
-                {\codelocation/server/src/lib/DrawCard.hs}
-}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{../images/shufflepicker.png}
+    \caption{The Shuffle Picker Window}%
+    \label{fig:shufflepicker}
+\end{figure}
 
-In the above code, the internal cards are encapsulated in a Deck, which
-prevents users of the module modifying them, as the type constructor is not
-exported. This means we can maintain state of the deck that users pass in
-without having to resort to non Haskell-like code such as top level mutable
-IORefs and unsafePerformIO\@.
+Another program provides a similar interface but instead allows multiple hands 
+to be drawn and the number of times each card was drawn displayed in a graph. 
+This  allows us to easily see the effect of the different algorithms on the 
+uniformness of the card distribution.
 
-The function initDeck returns an IO instance of Drawable. This function is 
-used to initiate the deck, which involves a transform of some form upon the 
-full deck. In the case of a Knuth shuffle, this would be shuffling the deck 
-using the Knuth method \parencite{knuth1997}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{../images/shuffletester.png}
+    \caption{The Shuffle Tester Program}%
+    \label{fig:shuffletester}
+\end{figure}
 
-The function draw takes an instance of Drawable that was obtained from the
-initDeck function or another invocation of draw, and draws a card in some way.
-It then returns the card, and the new state of the instance. In the case of
-a shuffle, this would generally just involve taking the first card of the
-deck. Both these functions need to be in the IO Monad as generating random
-numbers without a fixed seed involves IO\@.
+The sources of randomness and their cycles can be found in the below table.
 
-Below are two implementations of the Drawable class, the first takes
-random indexes from a deck and returns that card, the second uses the Knuth
-shuffle to shuffle the deck then takes the top item from the deck.
-\newline
+\vspace{0.7cm}
 
-\vbox{%
-\lstinputlisting[firstline=29, lastline=41, caption=RandomIndex]
-                {\codelocation/server/src/lib/DrawCard.hs}
-}
+\begin{adjustbox}{center}
+    \begin{tabular}{l l}
+    \toprule
+    Random Source                                                   & Cycle                         \\
+    \midrule
 
-\vbox{%
-\lstinputlisting[firstline=43, lastline=64, caption=KnuthShuffle]
-                {\codelocation/server/src/lib/DrawCard.hs}
-}
+    Portable Combined Generator of L'Eucyer \parencite{leucyer1988} & See equation~\ref{eq:leucyer} \\ \addlinespace
+
+    Fast Mersenne Twister \parencite{matsumoto1998,saito2008}       & See equation~\ref{eq:twister} \\ \addlinespace
+
+    Multiply With Carry 256 \parencite{marsaglia2003}               & See equation~\ref{eq:mwc}     \\
+
+    \bottomrule
+    \end{tabular}
+\end{adjustbox}
+
+\vspace{0.7cm}
+
+\begin{equation} \label{eq:leucyer}
+\frac{(2147483563-1)(2147483399-1)}{2}
+\end{equation}
+
+\begin{equation} \label{eq:twister}
+{2}^{19937}-1
+\end{equation}
+
+\begin{equation} \label{eq:mwc}
+{2}^{8222}
+\end{equation}
