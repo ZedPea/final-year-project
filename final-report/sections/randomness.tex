@@ -70,36 +70,90 @@ uniformness of the card distribution.
     \label{fig:shuffletester}
 \end{figure}
 
-The sources of randomness and their cycles can be found in the below table.
+The three sources of randomness used are:
 
-\vspace{0.7cm}
+\begin{itemize}
+    \item Portable Combined Generator of L'Eucyer \parencite{leucyer1988}
+    \item Faster Mersenne Twister \parencite{matsumoto1998,saito2008}
+    \item Multiply With Carry 256 \parencite{marsaglia2003}
+\end{itemize}
 
-\begin{adjustbox}{center}
-    \begin{tabular}{l l}
-    \toprule
-    Random Source                                                   & Cycle                         \\
-    \midrule
+L'Eucyer cycle length: $ \displaystyle \frac{(2147483563-1)(2147483399-1)}{2}$\\
 
-    Portable Combined Generator of L'Eucyer \parencite{leucyer1988} & See equation~\ref{eq:leucyer} \\ \addlinespace
+Fast Mersenne Twister cycle length: $ \displaystyle {2}^{19937}-1$\\
 
-    Fast Mersenne Twister \parencite{matsumoto1998,saito2008}       & See equation~\ref{eq:twister} \\ \addlinespace
+Multiply With Carry 256 cycle length: $ \displaystyle {2}^{8222}$\\
 
-    Multiply With Carry 256 \parencite{marsaglia2003}               & See equation~\ref{eq:mwc}     \\
+These cycle lengths are sufficiently long that it would be very difficult
+for an attacker to use the knowledge of the period length to their advantage,
+as even the algorithm with the lowest cycle (L'Eucyer's), allows for
+approximately $1.35e17$ hands to be dealt before the generator loops.
 
-    \bottomrule
-    \end{tabular}
-\end{adjustbox}
+Whilst testing the shuffles with the shuffle tester, it was discovered that
+the Knuth shuffle with the Mersenne twister algorithm would deal cards in a
+non uniform manner.
 
-\vspace{0.7cm}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{../images/faultymersenne.png}
+    \caption{The Non Uniform Mersenne Distribution}%
+    \label{fig:faultymersenne}
+\end{figure}
 
-\begin{equation} \label{eq:leucyer}
-\frac{(2147483563-1)(2147483399-1)}{2}
-\end{equation}
+This was due to the random library having no function allowing random numbers
+within a range to be generated, and instead a na\"{\i}ve implementation was
+used:
 
-\begin{equation} \label{eq:twister}
-{2}^{19937}-1
-\end{equation}
+\begin{lstlisting}[basicstyle=\footnotesize]
+randomFrom0ToN_Mersenne :: Int -> IO Int
+randomFrom0ToN_Mersenne n = (`mod` n) <$> M.getStdRandom M.random
+\end{lstlisting}
 
-\begin{equation} \label{eq:mwc}
-{2}^{8222}
-\end{equation}
+Due to the the values not begin distributed evenly, this resulted in the
+above non uniform distribution. This was solved by using an algorithm in which
+all the possible values of the random number generator are divided into equal
+sized intervals, each representing one of the desired values. For example
+if the maximum number the random number generate can create is 11, and the
+desired values are a range from 0 to 5, \{0,1\} would be assigned to 0, \{2,3\}
+to 1, and so on. The new algorithm is shown below. \parencite{website:reich2011}
+
+\lstinputlisting[firstline=23, lastline=38]
+                {\codelocation/server/src/lib/RandomSource.hs}
+
+To an extent this demonstrates how easy it would for poker software to have
+biased distributions if rigorous testing procedures were not in place.
+
+A simple way for a malicious actor to generate cards which appear to be random
+but actually benefit or hinder a player is to generate cards in a random
+way, as in one of the above algorithms, then inspect the generated cards,
+and distribute them to players in a specific way to cause the desired effect.
+For example, if there were 3 players, and the generated cards were
+[Ace, Ace, Seven, Seven, Two, Two], both the aces could be distributed to
+the player who has the least chips, whilst the other two players both receive
+a seven and two, the statistically worst hand in Texas Hold-Em Poker.
+
+Using this method of rewarding the players with less chips, whilst the overall 
+hands and cards generated will be uniform, the cards dealt to each player 
+will not be. This could still be measured, but is harder to do so. If the
+method is repeatedly applied, in that a player will gain chips by being dealt 
+favourable hands and lose chips when dealt bad hands, the player would have 
+a cycle of good to bad cards dealt to him as his chips decrease and increase, 
+and so might be difficult to detect over long periods, as the highs and lows 
+would cancel out.
+
+However, this would be possible to detect if a player is particularly good, or
+particularly bad. If they are particularly good, and play their bad hands well
+to minimise their chip loss, they will over long periods have a non uniform
+card distribution due to constantly having more chips than the average player.
+
+Again, this can be mitigated by dealing uniformly distributed cards to all
+players, but instead manipulating the table cards, so flops which benefit
+the players with less chips' hands. In this way, a good player still receives
+the amount of AA hands as a poorer player, but upon having this AA hand will
+find that other players achieve three of a kinds, two pairs, flushes etc
+with their lower ranked hands.
+
+As you can tell, there are many ways to manipulate the card generation in
+harder and harder to detect ways to the casino's benefit. It is for this
+reason that casinos must be transparent about their algorithms and allow
+for rigorous investigation by standards agencies.
