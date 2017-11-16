@@ -1,0 +1,53 @@
+\section{Gameplay}
+In this section a high level description of the gameplay will be outlined.
+We can describe the gameplay with the below psuedocode.
+
+\vspace{0.4cm}
+
+\begin{algorithm}[H]
+    start server\;
+    wait for specified minimum connections\;
+    launch game\;
+    \While{players $>$ 1}{
+        deal cards to each player\;
+        \For{each betting round whilst players in play $>$ 1}{
+            prompt each player for action\;
+            evaluate actions\;
+            reveal next set of cards\;
+        }
+        update player chips counts\;
+        remove players with no chips\;
+    }
+\end{algorithm}
+
+\vspace{0.4cm}
+
+The client and server programs interact using the network library, which
+uses low level sockets to send messages to each other. The messages are queued
+and decoded one at a time on either side, as multiple messages can be packed
+into one read for efficiency. The messages are encoded with an efficient binary
+protocol to reduce the amount of data needing to be sent over the network.
+Even without these optimisations, due to the data being essentially text, the
+bandwidth needed to transfer the messages is very minimal.
+
+In the client, upon receiving a message, it will decode it, and depending upon
+the message type, it will generally update the internal state of the gameplay,
+then update the GUI to reflect these changes. Upon being prompted for an
+input, the related dialog boxes or buttons will be enabled and visible.
+Once an input is selected, this will be encoded and sent back to the server.
+
+The AI is implemented in nearly the exact same way as the client. A framework
+was developed which takes care of updating the internal state and passing the
+messages back and forth, so all that is needed to create a new AI is to
+implement a function which takes a list of valid inputs, and the current
+states, and returns a valid action. This enables a very simple AI to be
+implemented in very few lines of code. For example, the random AI, which simply
+picks a random action and a random raise size, if raise is selected, can
+be implemented in 10 lines of code.
+
+All inputs are validated on the server. This prevents malicious or faulty
+clients from sending illegal or invalid messages which could alter their
+standings or possibly crash the server. However, currently messages are not
+encrypted went they are sent, which could allow malicious parties to man in the
+middle the connection and alter the players actions. In future, we could look
+into possible encryption techniques to secure this avenue of exploitation.

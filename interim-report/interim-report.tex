@@ -1,7 +1,6 @@
 \documentclass{article}
 
 \usepackage{svg}
-\usepackage[strict]{changepage}
 \usepackage[style=authoryear,backend=biber]{biblatex}
 \usepackage{graphicx}
 \usepackage{subcaption}
@@ -9,9 +8,9 @@
 \usepackage{listings}
 \usepackage{float}
 \usepackage{adjustbox}
-\usepackage{wrapfig}
 \usepackage{amsmath}
 \usepackage{siunitx}
+\usepackage[boxed]{algorithm2e}
 
 \sisetup{output-exponent-marker=\ensuremath{\mathrm{e}}}
 
@@ -43,9 +42,6 @@
 \newpage
 
 \input{sections/randomness.tex}
-\newpage
-
-\input{sections/networking.tex}
 \newpage
 
 \input{sections/bibliography.tex}
