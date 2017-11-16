@@ -78,16 +78,60 @@ The three sources of randomness used are:
     \item Multiply With Carry 256 \parencite{marsaglia2003}
 \end{itemize}
 
-L'Eucyer cycle length: $ \displaystyle \frac{(2147483563-1)(2147483399-1)}{2}$\\
-
-Fast Mersenne Twister cycle length: $ \displaystyle {2}^{19937}-1$\\
-
-Multiply With Carry 256 cycle length: $ \displaystyle {2}^{8222}$\\
+\begin{center}
+    \begin{tabular}{l l l}
+    \toprule
+    Random Source           & Bit Size  & Cycle Length  \\
+    \midrule
+    L'Eucyer                & 32        & $ \displaystyle \frac{(2147483563-1)(2147483399-1)}{2}$   \\ \addlinespace
+    Fast Mersenne Twister   & 128       & $ \displaystyle {2}^{19927}-1$                            \\ \addlinespace
+    Multiply With Cary 256  & 32        & $ \displaystyle {2}^{8222}$                               \\
+    \bottomrule
+    \end{tabular}
+\end{center}
 
 These cycle lengths are sufficiently long that it would be very difficult
 for an attacker to use the knowledge of the period length to their advantage,
 as even the algorithm with the lowest cycle (L'Eucyer's), allows for
 approximately $1.35e17$ hands to be dealt before the generator loops.
+
+The bit size is not an issue in the RandomIndex and KnuthShuffle
+implementation, as they only require random numbers to be equally distributed
+between 0 and 51. However, RandomSort generates one random number for each
+card, then sorts the card list based on the number generated. Therefore, if
+the same number is generated twice the shuffle will be non random.
+
+We can compute the probability of the same number being picked twice with the
+below formula, where $k = 2^\text{bit size} - 1$. 52 is present in the
+formula because that is the number of random numbers that are drawn, one for
+each card.
+
+\begin{equation}
+p = 1 - \frac{k!}{{k^{52}}(k - 52)!}
+\end{equation}
+
+Factorials of the massive numbers we are using are very expensive for a
+computer to calculate, so we can simplify the above formula to a reasonably
+fast solution as show below:
+
+\begin{equation}
+p = 1 - \frac{\displaystyle\prod_{i=0}^{51} k - i}{k^{52}}
+\end{equation}
+
+Plugging in the bit lengths, for 32 bits we get:
+
+\begin{equation}
+p = 3.08\num{e-7}
+\end{equation}
+
+And for 128 bits we get:
+
+\begin{equation}
+p = 3.89\num{e-36}
+\end{equation}
+
+As you can see, the probabilities are small enough for the bit length to be
+of very little consequence.
 
 Whilst testing the shuffles with the shuffle tester, it was discovered that
 the Knuth shuffle with the Mersenne twister algorithm would deal cards in a
@@ -116,8 +160,9 @@ sized intervals, each representing one of the desired values. For example
 if the maximum number the random number generate can create is 11, and the
 desired values are a range from 0 to 5, \{0,1\} would be assigned to 0, \{2,3\}
 to 1, and so on. The new algorithm is shown below. \parencite{website:reich2011}
+\newpage
 
-\lstinputlisting[firstline=23, lastline=38]
+\lstinputlisting[firstline=25, lastline=40]
                 {\codelocation/server/src/lib/RandomSource.hs}
 
 To an extent this demonstrates how easy it would for poker software to have
@@ -157,10 +202,8 @@ Software with rigged gameplay has been observed in the wild too. In 2011
 `BLR Technologies' was discovered to have been utilising rigged odds, with an 
 observed win rate of $24.70\%$ compared to an expected win rate of $49.29\%$,
 after having played 328 rounds. The chance of this occurring is 1 in 
-146,107,962. \parencite{website:shackleford2011}
-
-After these allegations, the companies software was dropped by a casino software
-aggregator, `5Dimes'.
+146,107,962. \parencite{website:shackleford2011} After these allegations, 
+the companies software was dropped by a casino software aggregator, `5Dimes'.
 
 In conclusion, whilst we can demonstrate random number generation algorithms
 to be hard or impossible to manipulate by the end user, the creator can do so
