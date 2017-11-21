@@ -5,27 +5,19 @@
 \usepackage{graphicx}
 \usepackage{subcaption}
 \usepackage{booktabs}
-\usepackage{listings}
 \usepackage{float}
 \usepackage{adjustbox}
 \usepackage{amsmath}
 \usepackage{siunitx}
-\usepackage[boxed]{algorithm2e}
+\usepackage[boxruled]{algorithm2e}
 
 \sisetup{output-exponent-marker=\ensuremath{\mathrm{e}}}
-
-\newcommand{\codelocation}{../../../../Haskell/networked-poker}
 
 \addbibresource{sections/bibliography.bib}
 \setcounter{tocdepth}{1}
 \setcounter{secnumdepth}{1}
 
 \begin{document}
-
-\lstset{language=Haskell,
-        frame=single,
-        captionpos=b
-}
 
 \input{sections/titlepage.tex}
 
@@ -35,10 +27,10 @@
 \input{sections/introduction.tex}
 \newpage
 
-\input{sections/gui.tex}
+\input{sections/gameplay.tex}
 \newpage
 
-\input{sections/gameplay.tex}
+\input{sections/gui.tex}
 \newpage
 
 \input{sections/randomness.tex}

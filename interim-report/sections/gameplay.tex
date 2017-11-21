@@ -2,15 +2,15 @@
 In this section a high level description of the gameplay will be outlined.
 We can describe the gameplay with the below psuedocode.
 
-\vspace{0.4cm}
+\vspace{0.3cm}
 
 \begin{algorithm}[H]
     start server\;
-    wait for specified minimum connections\;
+    wait for minimum connections\;
     launch game\;
     \While{players $>$ 1}{
         deal cards to each player\;
-        \For{each betting round whilst players in play $>$ 1}{
+        \For{each betting round while (players in play $>$ 1)}{
             prompt each player for action\;
             evaluate actions\;
             reveal next set of cards\;
@@ -18,9 +18,88 @@ We can describe the gameplay with the below psuedocode.
         update player chips counts\;
         remove players with no chips\;
     }
+\caption{The poker server algorithm}%
+\label{code:pokerServer}
 \end{algorithm}
 
-\vspace{0.4cm}
+\vspace{0.3cm}
+
+We can now talk about each step of the implementation in more detail, and the
+problems encountered. Once a player connects to the server, upon receiving
+an initial message from the server, the developed client then launches
+a GUI, which is talked about more in depth in its relevant section.
+
+Card dealing has been abstracted, and as mentioned in the randomness section,
+is adaptable, and supports multiple different card picking and randomness
+sources. A new deck is initiated each round, with the chosen card picking
+and randomness sources. There are currently three different methods of
+picking a card.
+
+\begin{itemize}
+    \item Knuth Shuffle
+    \item Random Indexing
+    \item Random Sorting Shuffle
+\end{itemize}
+
+The knuth shuffle \parencite{knuth1997} can be implemented like so:
+
+\vspace{0.3cm}
+
+\begin{algorithm}[H]
+    \SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
+    \Input{An array $xs$ of cards, a function $getRandomNumber$}
+    \Output{$xs$ shuffled}
+    \BlankLine{}
+    \For{$i \leftarrow length (xs) - 1$ \KwTo{} 1}{
+        $j \leftarrow getRandomNumber (i)$\;
+        swap ($xs$, $i$, $j$)\;
+    }
+    return $xs$\;
+\caption{The knuth shuffle algorithm}
+\end{algorithm}
+
+\vspace{0.3cm}
+
+This algorithm produces uniformly distributed permutations, assuming the
+getRandomNumber function produces random numbers between 0 and i. However,
+a very similar version, which instead of swapping between i and j, swaps
+between 0 and j is not uniformly distributed. This can be proven by
+the fact that there are $n^n$ possible sequences of random numbers, whereas
+there are ${n!}$ possible permutations, which is not a factor of $n^n$.
+The knuth shuffle however can produce exactly ${n!}$ possible random number
+sequences. \parencite{website:rici2015}
+
+The random indexing card picking algorithm is very simple, and simply involves
+taking a random number r between 0, and the length of the card deck, and
+removing item r from the array.
+
+The random sorting shuffle is less simple and again is described below:
+
+\vspace{0.3cm}
+
+\begin{algorithm}[H]
+    \SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
+    \Input{An array $xs$ of cards, a function $getRandomNumber$}
+    \Output{$xs$ shuffled}
+    \BlankLine{}
+    $randomNums \leftarrow []$\;
+    \For{$i \leftarrow 0$ \KwTo{} length ($xs$)}{
+        randomNums += getRandomNumber (${2}^{32}$)\;
+    }
+    $combined \leftarrow zip$ (xs, randomNums)\;
+    $sorted \leftarrow sortBy ( combined, compare (snd))$\;
+    return map (fst, $sorted$)\;
+\caption{The random sort shuffle algorithm}
+\end{algorithm}
+
+\vspace{0.3cm}
+
+The above algorithm generates a random number for each card, and assigns
+one to each in a list of tuples. The list is then sorted by the random numbers,
+and the random numbers are then thrown away, and the list is returned. One
+possible pitfall of this algorithm is if the numbers generated are the same,
+however the probability of this happening is very small, and is discussed
+in the randomness section.
 
 The client and server programs interact using the network library, which
 uses low level sockets to send messages to each other. The messages are queued

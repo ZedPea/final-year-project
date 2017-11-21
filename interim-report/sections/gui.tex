@@ -16,9 +16,12 @@ as it makes for much less visual noise. The player labelled `A', is the
 users player. He/she will always be seated here, and the other players will
 be rotated around the board from their perspective. That is, every single
 player A through F will appear to be in seat A from their own point of view.
-Of course, this has been implemented to not affect how the gameplay works,
-as the ordering of players is maintained, it is simply the visual
-representation of the players which is being manipulated.
+The GUI is player centric. The relative positions, however will not be 
+modified. Player A will always have player B to their left and Player F to 
+their right, no matter where they visually appear to be. Of course, this has 
+been implemented to not affect how the gameplay works, as the ordering of 
+players is maintained, it is simply the visual representation of the players 
+which is being manipulated.
 
 Of course, the players need some way to interact with the game, and simple
 buttons which lie under the screen were used for this. The raise button
@@ -94,6 +97,13 @@ obvious card and poker chip assets, and colours, the implemented GUI is
 essentially the same as the mockup. One difference that was decided upon 
 adding whilst testing, was a yellow border around the current player, so users 
 would know how long it was until it was their turn. 
+
+One feature of note is button fading. When buttons are unavailable, for
+example if it's not the players turn, or a certain action would be invalid,
+the buttons are greyed out, and unclickable. When actions become available,
+they are clickable and fully coloured. This is an easy way to let players
+know the valid actions whilst keeping the GUI consistent. Faded and non faded
+buttons can be seen in figure~\ref{fig:guiwithconsole}.
 
 Another modification considered making was adding a dealer chip. Whilst
 online poker does not have an actual player who deals the cards, and indeed
