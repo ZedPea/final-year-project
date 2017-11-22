@@ -101,6 +101,24 @@ possible pitfall of this algorithm is if the numbers generated are the same,
 however the probability of this happening is very small, and is discussed
 in the randomness section.
 
+Action evaluation is done by simply updating a state monad which is threaded
+between all the main functions. For example, if a player makes a raise action,
+the minimum raise will be updated, the current bet will be updated, and
+the players bet and chips will be updated. These actions are propogated to the
+clients when neccessary to update their GUI's. Unlike a global variable,
+a state monad is a pure function, taking an old state and returning a new
+state. The makes the code a lot easier to reason about, being able to test
+out individual functions in the Haskell GHCI interpreter with a custom state
+inputted, rather than having to run a complex series of functions to get the
+global state in a suitable condition to test the functionality. The state
+monad is also using the StateT monad transformer. This allows us to use IO
+impure functions whilst still remaining in the state monad. Due to the
+setup of our type signatures, pure code is still in the StateT monad, but
+has an abstract type signature, so is prevented from running IO effectful code.
+In this way, we maintain ease of use, being able to call pure code in IO
+functions without unwrapping or lifting state monads, whilst being able to
+indicate impure functions in the type signature.
+
 The client and server programs interact using the network library, which
 uses low level sockets to send messages to each other. The messages are queued
 and decoded one at a time on either side, as multiple messages can be packed
