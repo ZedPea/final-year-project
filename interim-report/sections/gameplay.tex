@@ -1,6 +1,6 @@
 \section{Gameplay}
 In this section a high level description of the gameplay will be outlined.
-We can describe the gameplay with the below psuedocode.
+We can describe the gameplay with the below pseudocode.
 
 \vspace{0.3cm}
 
@@ -104,8 +104,8 @@ in the randomness section.
 Action evaluation is done by simply updating a state monad which is threaded
 between all the main functions. For example, if a player makes a raise action,
 the minimum raise will be updated, the current bet will be updated, and
-the players bet and chips will be updated. These actions are propogated to the
-clients when neccessary to update their GUI's. Unlike a global variable,
+the players bet and chips will be updated. These actions are propagated to the
+clients when necessary to update their GUI's. Unlike a global variable,
 a state monad is a pure function, taking an old state and returning a new
 state. The makes the code a lot easier to reason about, being able to test
 out individual functions in the Haskell GHCI interpreter with a custom state
