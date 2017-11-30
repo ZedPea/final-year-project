@@ -27,13 +27,12 @@ We can describe the gameplay with the below pseudocode.
 We can now talk about each step of the implementation in more detail, and the
 problems encountered. Once a player connects to the server, upon receiving
 an initial message from the server, the developed client then launches
-a GUI, which is talked about more in depth in its relevant section.
-
-Card dealing has been abstracted, and as mentioned in the randomness section,
-is adaptable, and supports multiple different card picking and randomness
-sources. A new deck is initiated each round, with the chosen card picking
-and randomness sources. There are currently three different methods of
-picking a card.
+a GUI, which is talked about more in depth in its relevant section. Once the
+GUI is launched, the initial two cards are dealt to every player. Card dealing 
+has been abstracted, and as mentioned in the randomness section, is adaptable, 
+and supports multiple different card picking and randomness sources. A new deck
+is initiated each round, with the chosen card picking and randomness sources. 
+There are currently three different methods of picking a card.
 
 \begin{itemize}
     \item Knuth Shuffle
@@ -69,11 +68,11 @@ there are ${n!}$ possible permutations, which is not a factor of $n^n$.
 The knuth shuffle however can produce exactly ${n!}$ possible random number
 sequences. \parencite{website:rici2015}
 
-The random indexing card picking algorithm is very simple, and simply involves
-taking a random number r between 0, and the length of the card deck, and
-removing item r from the array.
 
-The random sorting shuffle is less simple and again is described below:
+The second algorithm, Random Indexing, is very simple, and simply involves 
+taking a random number r between 0, and the length of the card deck, and 
+removing item r from the array. The random sorting shuffle however is less 
+simple and again is described below:
 
 \vspace{0.3cm}
 
@@ -83,7 +82,7 @@ The random sorting shuffle is less simple and again is described below:
     \Output{$xs$ shuffled}
     \BlankLine{}
     $randomNums \leftarrow []$\;
-    \For{$i \leftarrow 0$ \KwTo{} length ($xs$)}{
+    \For{$i \leftarrow 0$ \KwTo{} length ($xs$) $- 1$}{
         randomNums += getRandomNumber (${2}^{32}$)\;
     }
     $combined \leftarrow zip$ (xs, randomNums)\;
@@ -101,46 +100,41 @@ possible pitfall of this algorithm is if the numbers generated are the same,
 however the probability of this happening is very small, and is discussed
 in the randomness section.
 
-Action evaluation is done by simply updating a state monad which is threaded
-between all the main functions. For example, if a player makes a raise action,
-the minimum raise will be updated, the current bet will be updated, and
-the players bet and chips will be updated. These actions are propagated to the
-clients when necessary to update their GUI's. Unlike a global variable,
-a state monad is a pure function, taking an old state and returning a new
-state. The makes the code a lot easier to reason about, being able to test
-out individual functions in the Haskell GHCI interpreter with a custom state
-inputted, rather than having to run a complex series of functions to get the
-global state in a suitable condition to test the functionality. The state
-monad is also using the StateT monad transformer. This allows us to use IO
-impure functions whilst still remaining in the state monad. Due to the
+After cards have been dealt, each player in turn provides an action, these are
+then evaluated on the server, one by one, affecting the actions the subsequent
+players can then make. Action evaluation is done by simply updating a state 
+monad which is threaded between all the main functions. For example, if a 
+player makes a raise action, the minimum raise will be updated, the current bet 
+will be updated, and the players bet and chips will be updated. These actions 
+are propagated to the clients when necessary to update their GUI's. Unlike a 
+global variable, a state monad is a pure function, taking an old state and 
+returning a new state. The makes the code a lot easier to reason about, being 
+able to test out individual functions in the Haskell GHCI interpreter with a 
+custom state inputted, rather than having to run a complex series of functions 
+to get the global state in a suitable condition to test the functionality. 
+The state monad is also using the StateT monad transformer. This allows us to 
+use IO impure functions whilst still remaining in the state monad. Due to the
 setup of our type signatures, pure code is still in the StateT monad, but
 has an abstract type signature, so is prevented from running IO effectful code.
 In this way, we maintain ease of use, being able to call pure code in IO
 functions without unwrapping or lifting state monads, whilst being able to
 indicate impure functions in the type signature.
 
-The client and server programs interact using the network library, which
-uses low level sockets to send messages to each other. The messages are queued
-and decoded one at a time on either side, as multiple messages can be packed
-into one read for efficiency. The messages are encoded with an efficient binary
-protocol to reduce the amount of data needing to be sent over the network.
-Even without these optimisations, due to the data being essentially text, the
-bandwidth needed to transfer the messages is very minimal.
-
-In the client, upon receiving a message, it will decode it, and depending upon
-the message type, it will generally update the internal state of the gameplay,
-then update the GUI to reflect these changes. Upon being prompted for an
-input, the related dialog boxes or buttons will be enabled and visible.
-Once an input is selected, this will be encoded and sent back to the server.
-
-The AI is implemented in nearly the exact same way as the client. A framework
-was developed which takes care of updating the internal state and passing the
-messages back and forth, so all that is needed to create a new AI is to
-implement a function which takes a list of valid inputs, and the current
-states, and returns a valid action. This enables a very simple AI to be
-implemented in very few lines of code. For example, the random AI, which simply
-picks a random action and a random raise size, if raise is selected, can
-be implemented in 10 lines of code.
+Once evaluation has finished, the server will then send a message back to the
+client with a new state, which the client uses to update the GUI and
+potentially prompt the player for a new action. To send these messages back
+and forth, the two programs interact using the network library, which uses low 
+level sockets to send messages to each other. The messages are queued and 
+decoded one at a time on either side, as multiple messages can be packed into 
+one read for efficiency. The messages are encoded with an efficient binary 
+protocol to reduce the amount of data needing to be sent over the network. 
+Even without these optimisations, due to the data being essentially text, the 
+bandwidth needed to transfer the messages is very minimal. In the client, upon 
+receiving a message, it will decode it, and depending upon the message type, 
+it will generally update the internal state of the gameplay, then update the 
+GUI to reflect these changes. Upon being prompted for an input, the related 
+dialog boxes or buttons will be enabled and visible. Once an input is selected, 
+this will be encoded and sent back to the server.
 
 All inputs are validated on the server. This prevents malicious or faulty
 clients from sending illegal or invalid messages which could alter their
@@ -148,3 +142,14 @@ standings or possibly crash the server. However, currently messages are not
 encrypted went they are sent, which could allow malicious parties to man in the
 middle the connection and alter the players actions. In future, we could look
 into possible encryption techniques to secure this avenue of exploitation.
+
+These few simple steps are essentially all that is needed to implement the
+game of poker. It is worth noting that the proposed AI will work in nearly the 
+exact same way as the client. A framework will be developed which takes care of 
+updating the internal state and passing the messages back and forth, so all 
+that is needed to create a new AI is to implement a function which takes a list
+of valid inputs, and the current states, and returns a valid action. This will
+enable very simple AI to be implemented in very few lines of code. For example,
+an AI could be implemented which simply picks a random action and a random 
+raise size, if raise is selected, could easily be implemented in 10 lines of
+code.

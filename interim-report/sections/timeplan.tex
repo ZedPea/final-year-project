@@ -1,0 +1,135 @@
+\section{Time Plan}
+
+As outline in the initial report, a timeplan was created with a suggested
+schedule and order to complete certain tasks of the project. We can now
+evaluate this to see our current progress. In the below chart, (S) = Server, 
+(C) = Client. Bars labelled green are tasks that have been completed, and
+bars labelled red are tasks that have not been completed yet.
+
+\vspace{0.3cm}
+
+% annoyingly i have to specify an adjustwidth for every chart, leaving any out
+% causes incorrect indentation, possibly due to internal indentation in the 
+% library
+\begin{adjustwidth}{-7.8em}{}
+
+\begin{ganttchart}[
+        vgrid, 
+        hgrid,
+        title height=1,
+        y unit title=0.6cm,
+        x unit=0.3cm,
+        y unit chart=0.7cm,
+        bar/.append style={fill=green!40}
+    ]{1}{42}
+    \gantttitle{Semester Week}{6*7} \\
+    \gantttitle{8}{7}
+    \gantttitle{9}{7}
+    \gantttitle{10}{7}
+    \gantttitle{11}{7}
+    \gantttitle{12}{7}
+    \gantttitle{13}{7} \\
+
+    \ganttbar{Test Framework}   {1} {3}     \\
+    \ganttbar{Types}            {4} {5}     \\
+    \ganttbar{Dummy Input}      {6} {7}     \\
+    \ganttbar{Betting}          {8} {9}     \\
+    \ganttbar{Card Generation}  {10}{12}    \\
+    \ganttbar{Game Flow (S)}    {13}{15}    \\
+    \ganttbar{Winner Calc}      {16}{20}    \\
+    \ganttbar{Distribute Pots}  {21}{25}    \\
+    \ganttbar{Dummy Output}     {26}{28}    \\
+    \ganttbar{Fix Bugs}         {29}{34}    \\
+    \ganttbar{Networking (S)}   {35}{42}
+\end{ganttchart}\\
+
+\end{adjustwidth}
+
+\begin{adjustwidth}{-7.3em}{}
+
+\begin{ganttchart}[
+        vgrid, 
+        hgrid,
+        title height=1,
+        y unit title=0.6cm,
+        x unit=0.3cm,
+        y unit chart=0.7cm,
+        bar/.append style={fill=green!40}
+    ]{1}{42}
+    \gantttitle{Semester Week}{6*7} \\
+    \gantttitle{14}{7}
+    \gantttitle{15}{7}
+    \gantttitle{16}{7}
+    \gantttitle{17}{7}
+    \gantttitle{18}{7}
+    \gantttitle{19}{7} \\
+
+    \ganttbar{Write GUI}        {1} {10}    \\
+    \ganttbar{Hook Up GUI}      {11}{15}    \\
+    \ganttbar{Networking (C)}   {16}{22}    \\
+    \ganttbar{Game Flow (C)}    {22}{28}    \\
+    \ganttbar{Interim Report}   {29}{42}
+\end{ganttchart}\\
+
+\end{adjustwidth}
+
+\begin{adjustwidth}{-5.8em}{}
+
+\begin{ganttchart}[
+        vgrid, 
+        hgrid,
+        title height=1,
+        y unit title=0.6cm,
+        x unit=0.3cm,
+        y unit chart=0.7cm,
+        bar/.append style={fill=red!70},
+    ]{1}{42}
+    \gantttitle{Semester Week}{6*7} \\
+    \gantttitle{20}{7}
+    \gantttitle{21}{7}
+    \gantttitle{22}{7}
+    \gantttitle{23}{7}
+    \gantttitle{24}{7}
+    \gantttitle{25}{7} \\
+
+    \ganttbar{Simple AI}        {1} {14}    \\
+    \ganttbar{Complex AI}       {15}{42}
+
+\end{ganttchart}\\
+
+\end{adjustwidth}
+
+\begin{adjustwidth}{-6.1em}{}
+
+\begin{ganttchart}[
+        vgrid, 
+        hgrid,
+        title height=1,
+        y unit title=0.6cm,
+        x unit=0.3cm,
+        y unit chart=0.7cm,
+        bar/.append style={fill=red!70},
+    ]{1}{42}
+    \gantttitle{Semester Week}{6*7} \\
+    \gantttitle{26}{7}
+    \gantttitle{27}{7}
+    \gantttitle{28}{7}
+    \gantttitle{29}{7}
+    \gantttitle{30}{7}
+    \gantttitle{31}{7} \\
+
+    \ganttbar{Final Report}     {1} {28}
+\end{ganttchart}
+
+\end{adjustwidth}
+
+\vspace{0.3cm}
+
+As the current week is week 19, we can see that the project is right on
+schedule as expected, and the timeplan appears to have been calculated
+accurately. However, due to not being ahead of schedule, any unforeseen delays
+could potentially cause the project to fall behind and not be completed to a
+satisfactory level. The AI is also a large chunk of the project, and if this
+is not completed it will be quite troublesome. To some extent, having a simple
+AI that will implemented will offset this risk, allowing an AI to be submitted
+for the final software, albeit one not as complex as hoped for.
