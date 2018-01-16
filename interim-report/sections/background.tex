@@ -1,5 +1,41 @@
-\section{Randomness and Shuffling}
-In the game of poker, the house does not wager against players, as in each
+\section{Background}
+Poker software has been developed before by multiple companies, but these
+are all mostly commercial, closed source software, with no discussion of the
+algorithms and design decisions that went into them. This project will go
+into depth on some of the issues that are faced when converting the game of
+poker from the table to the computer.
+
+\subsection{How to play Poker}
+Each player is dealt two cards, and the player to the left of the dealer must
+pay a small bet, called the small blind, with the player to his left paying 
+double this bet, the big blind. Play then proceeds clockwise from the next
+player. Each player has the option to fold, check, call, raise, or go all in,
+depending upon the circumstances. Folding forfeits any stake in the round, and
+removes you from play. Checking means you wish not to bet, and is only
+available if there is no current bet which needs matching. Calling means to
+match the current bet, and raising means to raise the current bet to a higher
+value. Going all in means to bet all your chips, and sometimes is mandatory to
+remain in the pot, if you have less chips than the current bet. This can cause
+multiple side pots to occur. Each player has an amount of chips at the 
+beginning of the game which they bet with, these may be backed by real money as
+is the case in casinos and most online poker software. Once all players have
+matched the current bet or folded, three table cards are revealed, called
+the flop. These are common to all players hands, and may be used along with
+the players two hidden cards to form the best 5 card hand. A further two table
+cards will be revealed as play continues, unless all players but one fold,
+leaving the winner to keep any bet chips. Again, players may bet if they wish.
+Providing there are still players in play, the fourth card will be revealed, 
+called the turn. The same process occurs again, then the fifth card will be
+revealed, the river. Once this betting round has ended, any players still
+in play reveal their cards, and the winner is the player who has the best
+five card hand. These can vary from simple pairs, to higher valued hands such
+as a straight, which is five cards in a row, such a 5, 6, 7, 8, 9. The winner
+receives all the chips in the middle of the table gained from other players
+bets, and a new round begins, with the dealer moving to the next player on the
+left.
+
+\subsection{Randomness and Shuffling}
+In the game of poker, the house does not wager against players. In each
 poker hand, a player always wins, unlike other popular casino games, such as 
 blackjack or roulette. Instead the usual method for online poker companies and
 indeed poker tables in real life to make money is the rake. The rake is the 
@@ -142,7 +178,7 @@ The three sources of randomness used are:
     \midrule
     L'Eucyer                & 32        & $ \displaystyle \frac{(2147483563-1)(2147483399-1)}{2}$   \\ \addlinespace
     Fast Mersenne Twister   & 128       & $ \displaystyle {2}^{19927}-1$                            \\ \addlinespace
-    Multiply With Cary 256  & 32        & $ \displaystyle {2}^{8222}$                               \\
+    Multiply With Carry 256  & 32        & $ \displaystyle {2}^{8222}$                               \\
     \bottomrule
     \end{tabular}
 \end{center}

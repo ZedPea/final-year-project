@@ -1,0 +1,40 @@
+\section{Aims and Objectives}
+This project is setting out to investigate the considerations that have to be
+taken into account in developing an online poker solution, which may not be
+present in a real world casino, such as the implementation of a usable GUI, 
+a secure random number generator, and secure card picking algorithms. Online 
+gambling software has become prevalent in recent years, and developers have to 
+be wary of potential pitfalls which can allow malicious actors to exploit the 
+computer executed gameplay to their own benefit.
+
+\subsection{Objective 1: A usable GUI}
+When playing poker online, the graphical user interface has to be well designed
+to convey all the information that is available to the player at a conventional
+poker table, whilst being easy to make actions, such as raising the bet to
+an arbitrary value. Initial mockups of the GUI will be made, then based on
+user acceptance, this initial GUI may be altered to make for a more usable
+solution. The usability of the GUI could be measured by asking people to rate
+the attributes of the GUI compared to other available poker software's.
+
+\subsection{Objective 2: Secure Pseudo Random Number Generation}
+Despite random numbers being easy to access in most programming languages, 
+these are in fact not true random numbers, and instead pseudo random numbers, 
+which aim to be sufficiently random for real world use, whilst being generated 
+by an algorithm. Multiple different random number generation algorithms will
+be used, and the cycle lengths and bit size will be examined, to determine if 
+a malicious actor can feasibly exploit a repeating of the random numbers or 
+low entropy to determine the values of upcoming cards. A GUI application will
+be developed to allow dealing of multiple hands, with different random number
+sources, and different card picking algorithms, to examine if the spread of
+the dealt cards is statistically sufficient.
+
+\subsection{Objective 3: Accurate Gameplay}
+As is the main aim of this project, the actual gameplay will have to be
+developed to be usable to play poker with. A few different card picking
+algorithms will be outlined and compared. High level descriptions of the
+client and server's execution will be given, and each step in detail will
+then be described, with justifications for individual design choices. The
+accuracy of the gameplay can be potentially be validated by creating a test
+suite which inputs multiple games into the software, and ensures that the
+end result is as expected, e.g.\ each player ends with the correct amount of
+chips.
