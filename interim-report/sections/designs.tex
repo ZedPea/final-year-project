@@ -4,22 +4,22 @@ and the user interface.
 
 \subsection{Gameplay Design}
 In this section a high level description of the gameplay will be outlined.
-We can describe the gameplay with the below pseudocode.
+This can be seen in Algorithm~\ref{code:pokerServer}
 
 \vspace{0.3cm}
 
 \begin{algorithm}[H]
-    start server\;
-    wait for minimum connections\;
-    launch game\;
+    \nlset{STEP 1} start server\;
+    \nlset{STEP 2} wait for minimum connections\;
+    \nlset{STEP 3} launch game\;
     \While{players $>$ 1}{
-        deal cards to each player\;
+        \nlset{STEP 4} deal cards to each player\;
         \For{each betting round while (players in play $>$ 1)}{
-            prompt each player for action\;
+            \nlset{STEP 5} prompt each player for action\;
             evaluate actions\;
-            reveal next set of cards\;
+            \nlset{STEP 6} reveal next set of cards\;
         }
-        update player chips counts\;
+        \nlset{STEP 7} update player chips counts\;
         remove players with no chips\;
     }
 \caption{The poker server algorithm}%
@@ -44,21 +44,24 @@ There are currently three different methods of picking a card.
     \item Random Sorting Shuffle
 \end{itemize}
 
-The knuth shuffle \parencite{knuth1997} can be implemented like so:
+The knuth shuffle \parencite{knuth1997} can be implemented as in
+Algorithm~\ref{code:knuthShuffle}
 
 \vspace{0.3cm}
 
 \begin{algorithm}[H]
     \SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
-    \Input{An array $xs$ of cards, a function $getRandomNumber$}
+    \Input{An array $xs$ of cards, a function $getRandomNumber$ that takes an
+           int, and returns a random number between 0 and this int}
     \Output{$xs$ shuffled}
     \BlankLine{}
     \For{$i \leftarrow length (xs) - 1$ \KwTo{} 1}{
-        $j \leftarrow getRandomNumber (i)$\;
-        swap ($xs$, $i$, $j$)\;
+        \nlset{STEP 1} $j \leftarrow getRandomNumber (i)$\;
+        \nlset{STEP 2} swap ($xs$, $i$, $j$)\;
     }
-    return $xs$\;
-\caption{The knuth shuffle algorithm}
+    \nlset{STEP 3} return $xs$\;
+\caption{The knuth shuffle algorithm}%
+\label{code:knuthShuffle}
 \end{algorithm}
 
 \vspace{0.3cm}
@@ -72,27 +75,28 @@ there are ${n!}$ possible permutations, which is not a factor of $n^n$.
 The knuth shuffle however can produce exactly ${n!}$ possible random number
 sequences. \parencite{website:rici2015}
 
-
 The second algorithm, Random Indexing, is very simple, and simply involves 
 taking a random number r between 0, and the length of the card deck, and 
 removing item r from the array. The random sorting shuffle however is less 
-simple and again is described below:
+simple and again is described in algorithm~\ref{code:randomSortShuffle}
 
 \vspace{0.3cm}
 
 \begin{algorithm}[H]
     \SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
-    \Input{An array $xs$ of cards, a function $getRandomNumber$}
+    \Input{An array $xs$ of cards, a function $getRandomNumber$ that takes an
+           int, and returns a random number between 0 and this int}
     \Output{$xs$ shuffled}
     \BlankLine{}
-    $randomNums \leftarrow []$\;
-    \For{$i \leftarrow 0$ \KwTo{} length ($xs$) $- 1$}{
+    \nlset{STEP 1} $randomNums \leftarrow []$\;
+    \nlset{STEP 2} \For{$i \leftarrow 0$ \KwTo{} length ($xs$) $- 1$}{
         randomNums += getRandomNumber (${2}^{32}$)\;
     }
-    $combined \leftarrow zip$ (xs, randomNums)\;
+    \nlset{STEP 3} $combined \leftarrow zip$ (xs, randomNums)\;
     $sorted \leftarrow sortBy ( combined, compare (snd))$\;
-    return map (fst, $sorted$)\;
-\caption{The random sort shuffle algorithm}
+    \nlset{STEP 4} return map (fst, $sorted$)\;
+\caption{The random sort shuffle algorithm}%
+\label{code:randomSortShuffle}
 \end{algorithm}
 
 \vspace{0.3cm}
@@ -204,7 +208,8 @@ prevents the user selecting a non integer.
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.5\linewidth]{../images/raisewindow.png}
-    \caption{The Raise Window}%
+    \caption{The Raise Window, where A is the minimum raise, B is the maximum
+             raise, and C is the currently selected raise value}%
     \label{fig:raisewindow}
 \end{figure}
 
@@ -216,7 +221,9 @@ casting it to an integer variable. This variable was then used for displaying
 the current users selection, and for the program to take as the chosen value 
 once the `OK' button had been selected. Figure~\ref{fig:raisewindow} shows the 
 raise window, where A is the minimum value, B is the maximum value, and C is 
-the current value.
+the current value. It should be noted that these values are denoted in chips,
+and no particular currency is implied, though most casinos usually peg a
+fiat value to a chip.
 
 \begin{figure}
     \centering

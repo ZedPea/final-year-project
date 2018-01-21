@@ -5,7 +5,7 @@ algorithms and design decisions that went into them. This project will go
 into depth on some of the issues that are faced when converting the game of
 poker from the table to the computer.
 
-\subsection{How to play Poker}
+\subsection{How To Play Poker}
 Each player is dealt two cards, and the player to the left of the dealer must
 pay a small bet, called the small blind, with the player to his left paying 
 double this bet, the big blind. Play then proceeds clockwise from the next
@@ -92,13 +92,6 @@ complementary programs to test them. Firstly, a GUI which can be launched
 when the `--chooseshuffle' argument is given to the server, allows the card
 picking algorithm and random source to be altered mid game.
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.8\linewidth]{../images/shufflepicker.png}
-    \caption{The Shuffle Picker Window}%
-    \label{fig:shufflepicker}
-\end{figure}
-
 This program simply allows the user to change the shuffle and random source
 by picking from a list. Once this item is changed, internally a variable is
 assigned to the new chosen shuffle and random source, and upon the round
@@ -107,6 +100,13 @@ selected function. This prevents the method being changed mid round, which
 has a high potentially to cause bugs, due to the deck state having to be
 maintained. Upon subsequent rounds, the new chosen functions will be used
 to draw cards.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{../images/shufflepicker.png}
+    \caption{The Shuffle Picker Window}%
+    \label{fig:shufflepicker}
+\end{figure}
 
 Another program provides a similar interface but instead allows multiple hands 
 to be drawn and the number of times each card was drawn displayed in a graph. 
@@ -117,24 +117,33 @@ the maximum number of players is 6, and there are 5 cards displayed on the
 table. Hence, with 2 cards each, $2 * 6 + 5 = 17$. As each card is drawn,
 it is added to a card dictionary. If the card already exists, the number seen
 of this card is incremented. If not, the card is inserted, with an initial
-value of 1. Algorithm~\ref{code:shuffletester} describes this programs high
+value of 1. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{../images/shuffletester.png}
+    \caption{The Shuffle Tester Program}%
+    \label{fig:shuffletester}
+\end{figure}
+
+Algorithm~\ref{code:shuffletester} describes this programs high
 level execution.
 
 \vspace{0.3cm}
 
 \begin{algorithm}[H]
-    launch GUI\;
+    \nlset{STEP 1} launch GUI\;
     \While{close button not pressed}{
         \If{go button pressed}{
-            $iterations \leftarrow \text{selected number of iterations}$\;
+            \nlset{STEP 2} $iterations \leftarrow \text{selected number of iterations}$\;
             $drawFunction \leftarrow \text{selected card draw function}$\;
             $randomSource \leftarrow \text{selected source of randomness}$\;
             $cardMapping \leftarrow []$\;
-            \For{$i \leftarrow 0$ \KwTo{} $iterations$}{
+            \nlset{STEP 3} \For{$i \leftarrow 0$ \KwTo{} $iterations$}{
                 $deck \leftarrow \text{new deck}$\;
                 $cards \leftarrow []$\;
                 \For{$j \leftarrow 0$ \KwTo{} $17$}{
-                    $card \leftarrow drawCard(drawFunction, randomSource, deck)$\;
+                    \nlset{STEP 4} $card \leftarrow drawCard(drawFunction, randomSource, deck)$\;
                     \If{$card$ \text{is member of} $cardMapping$}{
                         cardMapping[card]++\;
                     }
@@ -143,11 +152,11 @@ level execution.
                     }
                 }
             }
-            $barChart \leftarrow []$\;
-            \For{$i \leftarrow 0$ \KwTo{} length ($cardMapping$)}{
+            \nlset{STEP 5} $barChart \leftarrow []$\;
+            \nlset{STEP 6} \For{$i \leftarrow 0$ \KwTo{} length ($cardMapping$)}{
                 createBar ($barChart$, $cardMapping[i]$)\;
             }
-            display ($barChart$)\;
+            \nlset{STEP 7} display ($barChart$)\;
         }
     }
 \caption{The shuffle tester algorithm}%
@@ -155,13 +164,6 @@ level execution.
 \end{algorithm}
 
 \vspace{0.3cm}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.8\linewidth]{../images/shuffletester.png}
-    \caption{The Shuffle Tester Program}%
-    \label{fig:shuffletester}
-\end{figure}
 
 The three sources of randomness used are:
 
@@ -186,50 +188,43 @@ The three sources of randomness used are:
 These cycle lengths are sufficiently long that it would be very difficult
 for an attacker to use the knowledge of the period length to their advantage,
 as even the algorithm with the lowest cycle (L'Eucyer's), allows for
-approximately $1.35e17$ hands to be dealt before the generator loops.
+approximately $1.35e17$ hands to be dealt before the generator cycle ends.
 
 The bit size is not an issue in the RandomIndex and KnuthShuffle
 implementation, as they only require random numbers to be equally distributed
 between 0 and 51. However, RandomSort generates one random number for each
 card, then sorts the card list based on the number generated. Therefore, if
-the same number is generated twice the shuffle will be non random.
-
-We can compute the probability of the same number being picked twice with the
-below formula, where $k = 2^\text{bit size} - 1$ in equation 
-~\ref{eq:probSameNumSimple} and~\ref{eq:probSameNumFast}. 52 is present in the
-formula because that is the number of random numbers that are drawn, one for
-each card.
+the same number is generated more than once, the shuffle will be non random.
+We can compute the probability of the same number being picked more than once
+using equation~\ref{eq:probSameNumSimple}.
 
 \begin{equation} \label{eq:probSameNumSimple}
-p = 1 - \frac{k!}{{k^{52}}(k - 52)!}
+\begin{split}
+& k = 2^\text{bit size}\\
+& p = 1 - \frac{k!}{{k^{52}}(k - 52)!}
+\end{split}
 \end{equation}
 
-Factorials of the large numbers we are using are numerically complex for a
-computer to calculate, so we can simplify the above formula to a reasonably
-fast solution as shown in equation~\ref{eq:probSameNumFast}
+Factorials of the large numbers we are using are numerically complex to
+calculate, so a simplification is shown in equation~\ref{eq:probSameNumFast}.
 
 \begin{equation} \label{eq:probSameNumFast}
-p = 1 - \frac{\displaystyle\prod_{i=0}^{51} k - i}{k^{52}}
-\end{equation}
+\begin{split}
+& k = 2^\text{bit size}\\
+& p = 1 - \frac{\displaystyle\prod_{i=0}^{51} k - i}{k^{52}}
+\end{split}
+\end{equation}\\
 
-Plugging in the bit lengths, for 32 bits we get:
+If we have a 32 bit number, $p = 3.08\num{e-7}$.\\
+For a 128 bit number, $p = 3.89\num{e-36}$.\\
 
-\begin{equation}
-p = 3.08\num{e-7}
-\end{equation}
-
-And for 128 bits we get:
-
-\begin{equation}
-p = 3.89\num{e-36}
-\end{equation}
-
-As you can see, the probabilities are small enough for the bit length to be
-of very little consequence.
+Therefore, the chance of the same number being picked more than once is small,
+and so the shuffle has a high probability to be uniform.
 
 Whilst testing the shuffles with the shuffle tester, it was discovered that
 the Knuth shuffle with the Mersenne twister algorithm would deal cards in a
-non uniform manner.
+non uniform manner. As we can see in~\ref{fig:faultymersenne}, the first 17
+cards in the deck were approximately 5\% less likely to be drawn.
 
 \begin{figure}[H]
     \centering
@@ -240,7 +235,9 @@ non uniform manner.
 
 This was due to the random library having no function allowing random numbers
 within a range to be generated, and instead a na\"{\i}ve implementation was
-used:
+used, as in Algorithm~\ref{code:rngBadCapping}. In this version of
+getRandomNumber, no bounds are given, and the function simply returns a
+random number in the range of an integer.
 
 \vspace{0.3cm}
 
@@ -249,8 +246,8 @@ used:
     \Input{An integer $maxValue$}
     \Output{A random number of maximum $maxValue$}
     \BlankLine{}
-    $x \leftarrow getRandomNumber$\;
-    return $x$ \% $maxValue$\;
+    \nlset{STEP 1} $x \leftarrow getRandomNumber$\;
+    \nlset{STEP 2} return $x$ \% $maxValue$\;
 \caption{Initial random number capping implementation}%
 \label{code:rngBadCapping}
 \end{algorithm}
@@ -263,7 +260,8 @@ all the possible values of the random number generator are divided into equal
 sized intervals, each representing one of the desired values. For example
 if the maximum number the random number generate can create is 11, and the
 desired values are a range from 0 to 5, \{0,1\} would be assigned to 0, \{2,3\}
-to 1, and so on. The new algorithm is shown below. \parencite{website:reich2011}
+to 1, and so on. This new version can be seen in
+Algorithm~\ref{code:rngGoodCapping} \parencite{website:reich2011}.
 
 \vspace{0.3cm}
 
@@ -272,16 +270,16 @@ to 1, and so on. The new algorithm is shown below. \parencite{website:reich2011}
     \Input{An integer $maxValue$}
     \Output{A random number of maximum $maxValue$}
     \BlankLine{}
-    $range \leftarrow 1 + maxValue$\;
-    $buckets \leftarrow {2}^{32}\; / \;range$\;
-    $limit \leftarrow buckets \times range$\;
-    $x \leftarrow 0$\;
+    \nlset{STEP 1} $range \leftarrow 1 + maxValue$\;
+    \nlset{STEP 2} $buckets \leftarrow {2}^{32}\; / \;range$\;
+    \nlset{STEP 3} $limit \leftarrow buckets \times range$\;
+    \nlset{STEP 4} $x \leftarrow 0$\;
 
-    \While{$x$ $<$ $limit$}{
+    \nlset{STEP 5} \While{$x$ $<$ $limit$}{
         $x \leftarrow getRandomNumber$\;
     }
 
-    return $x$ / $buckets$\;
+    \nlset{STEP 6} return $x$ / $buckets$\;
 \caption{Revised random number capping implementation}%
 \label{code:rngGoodCapping}
 \end{algorithm}
