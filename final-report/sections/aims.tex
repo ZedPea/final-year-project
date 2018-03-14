@@ -1,1 +1,28 @@
 \section{Aims and Objectives}
+This project is setting out to investigate the considerations that have to be
+taken into account in developing an online poker solution, which may not be
+present in a real world casino, such as the implementation of a usable GUI, 
+a secure random number generator, and secure card picking algorithms. Online 
+gambling software has become prevalent in recent years, and developers have to 
+be wary of potential pitfalls which can allow malicious actors to exploit the 
+computer executed gameplay to their own benefit.
+
+\subsection{Objective 1: A Usable GUI}
+When playing poker online, the graphical user interface has to be well designed
+to convey all the information that is available to the player at a conventional
+poker table, whilst being easy to make actions, such as raising the bet to
+an arbitrary value.
+
+\subsection{Objective 2: Secure Pseudo Random Number Generation}
+Despite random numbers being easy to access in most programming languages, 
+these are in fact not true random numbers, and instead pseudo random numbers, 
+which aim to be sufficiently random for real world use, whilst being generated 
+by an algorithm. Multiple different random number generation algorithms will
+be used, and the cycle lengths and bit size will be examined, to determine if 
+a malicious actor can feasibly exploit a repeating of the random numbers or 
+low entropy to determine the values of upcoming cards. A GUI application has
+been developed to allow dealing of multiple hands, with different random number
+sources, and different card picking algorithms, to examine if the spread of
+the dealt cards is statistically sufficient. Finally, some simple AI's have
+been developed to utilise automated play to investigate the effect on win
+percentage incurred by different shuffling algorithms and random sources.

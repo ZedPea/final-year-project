@@ -1,1 +1,128 @@
 \section{Technical Developments}
+
+\subsection{Testing}
+To test the poker server, and ensure that the gameplay is correct, the
+Haskell testing framework QuickCheck\cite{claessen2000} was used. This
+framework uses automated testing of functions using random input data to
+verify properties. For example, suppose we want to test the function which
+prompts the user for an amount to bed, then makes that bet. We can define a
+few properties which should hold when this occurs.
+Firstly, the amount of money present in the system should remain the same.
+
+\begin{lstlisting}
+prop_BetMoneyPreserved player gamestate =
+    let (newPlayer, newState) = bet player gamestate
+    player.money + gamestate.money == newPlayer.money + newState.money
+\end{lstlisting}
+\label{code:moneypreserved}
+
+We can then run the quickcheck property displayed in \ref{code:moneypreserved}
+and provided our types can have a random instance determined for them, it
+will feed in these random inputs to our function and check that the property
+holds true. If the property is proved false, the checker will print out the
+inputs that caused the failure, allowing the faulty code to be easily triggered
+and traced back.
+
+In this way, we can easily build up a large amount of simple tests to confirm
+that the base assertions hold true. We can then rerun these tests automatically
+on every code change, to confirm that we have not broken any expected
+behaviour. In this way, as long as the assertions are correct, our whole
+system should be robust.
+
+Upon these base assertions we can then extrapolate to a much larger scale.
+If the balance of the system is retained in the few functions that touch
+the balance, it is clear the the balance during a whole game will be maintained.
+
+One downside of this system arises when a large portion of the codebase is
+impure, and has to interact with a network, a database, or other impure code.
+The QuickCheck library cannot automatically define random instances for
+networks or databases (as there is no obvious sane way to do so), and so we
+would have to manually define a large mockup system to simulate a database
+and a network connection.
+
+To resolve these issues, another way of testing the system is black box
+testing, which we can semi automate using the developed AI's. A user only
+has a very few select inputs they can make, and at any point in the game,
+a user can only make an input that is valid for the users current situation.
+For example, they cannot "Call" if they do not have enough chips to do so.
+In this way, regardless of the data the user sends us, they cannot perform
+an invalid action, so all we need to determine is that any sequence of valid
+actions is itself a valid action. By running the server and letting AI's
+connect to it, and play each other, we can very quickly test large amounts
+of different actions in sequence. This method has helped uncover some rare
+crashes in the system.
+
+In practice, a mixture of the two testing methods is most effective. By
+creating larger impure functions out of small, testable pure functions, we
+can ensure that our primitive building blocks are valid, and then use automated
+block box testing to hit some of the rarer code paths and ensure that they
+too are valid.
+
+\subsection{Experimental Design}
+To test out the effects of the shuffle algorithms and random sources, multiple
+testing programs have been created. The first method is a simple shuffle
+tester. A shuffle method is chosen, along with a source of randomness. Then,
+multiple hands are dealt using the selected shuffle and random source, and
+the cards picked are recorded, and displayed in a graph format.
+
+[Insert image here]
+
+For each combination, we record the number of each card drawn, the total
+number of cards drawn, the mean cards of each type drawn, the standard
+deviation, and the coefficient of variation. The coefficient of variation
+(henceforth CV) is the ratio of the standard deviation to the mean, and
+simply indicates how spread out the data is. This can be used to determine
+how uniform a shuffle or random source is. As we increase the amount of
+shuffles performed, the mean will increase, and the standard deviation will
+decrease, so given an unbiased shuffle, this will tend towards a CV of 0.
+
+TODO: FILL OUT THIS TABLE
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{l l l l}
+    \toprule
+                & RandomIndex   & Knuth & RandomSort  \\
+    \midrule
+    LEucyer     & 0             & 0     & 0           \\ \addlinespace
+    Mersenee    & 0             & 0     & 0           \\ \addlinespace
+    MWC256      & 0             & 0     & 0           \\ \addlinespace
+    \bottomrule
+    \end{tabular}
+    \caption{The average CV after running 1000 trials for each shuffle and
+             random source}
+\end{table}
+
+TODO: ADD COMMENTS ON THE ABOVE RESULTS
+
+Secondly, to evaluate gameplay effects of these shuffles, two AI's were used.
+The first, was the control AI, and would simply call any bet. The second
+was a more sophisticated, rule based AI. This AI attempts to evaluate the value
+of its hand in relation to the cards on the table at any time, and bets
+correspondingly. This AI was then run, using each of the algorithms and
+random sources against the control AI, and the win percentage was recorded,
+after 1000 trials of each.
+
+TODO: FILL OUT THIS TABLE
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{l l l l}
+    \toprule
+                & RandomIndex   & Knuth & RandomSort  \\
+    \midrule
+    LEucyer     & 0\%           & 0\%   & 0\%         \\ \addlinespace
+    Mersenee    & 0\%           & 0\%   & 0\%         \\ \addlinespace
+    MWC256      & 0\%           & 0\%   & 0\%         \\ \addlinespace
+    \bottomrule
+    \end{tabular}
+    \caption{The win percentage of the rule-based-ai against the control
+             call-any AI for each shuffle and random source}
+\end{table}
+
+TODO: ADD COMMENTS ON THE ABOVE RESULTS
+
+Finally, if the poker server is launched with a flag, the shuffle and random
+source can be changed mid game, to see the live effect. Any updates to the
+shuffle and random source only apply once the current round is finished, to
+prevent corrupting the internal state of the card deck.
