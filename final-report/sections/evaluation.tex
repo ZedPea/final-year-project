@@ -1,1 +1,86 @@
 \section{Evaluation}
+
+\subsection{Further Work}
+There are a few areas of the project that could be improved. One issue is that
+when side pots are created, due to one player being all-in and unable to bet
+anymore, this is not visually indicated. The other players cannot tell how
+large the side pot or multiple side pots are without doing arithmetic manually,
+which is not very user friendly. It is difficulty to display side pots well
+without having a much more intensive graphics framework which allows for easy
+placement and spacing out of graphical assets. Such a framework would be an
+interesting avenue for exploration, as it would also allow a richer experience
+to be created with the possibility for animations, such as when a card is
+flipped, or chips are moved into the pot, or changing of graphical elements
+on the fly, for example to let users choose different table and card themes.
+
+Another weakness of the project is the networking is not very mature. A player
+is given infinite time to bet, and if they disconnect mid bet, this will
+cause the server to remain stuck waiting for them to respond. If they return
+an invalid message, they will be folded as expected, but some method of timing
+out players who disconnect or do not respond in time could be implemented.
+This could be enhanced to allow users to sit out for a round, or be
+automatically moved to sit out when they don't respond, allowing them to
+rejoin the game when they regain internet connectivity or return from their
+break. This would have to be handled to prevent users from sitting out when
+they are required to pay the big or small blind, and then rejoining when they
+can get a free set of cards, perhaps by making them only able to rejoin
+the table when it is their turn to pay the big blind. In addition to this,
+on the client side code would need to be developed to notify a user when they
+have lost and regained connection, and to allow them to choose to sit out a 
+round.
+
+Another idea which builds on the previous idea is allowing users to join
+tables in progress which are missing players. A system is already in process
+to allow multiple games to be ongoing at once, and if the timing out solution
+is applied, instead of new users having to wait for a whole new game to be
+ready, they could instead be instantly seated at a table which is missing
+a player. This would prevent games slowly losing players and delaying users
+from playing the game. This system has already been nearly completed, and
+would be trivial to implement once the timeout solution has been applied.
+
+Another improvement on the user experience could be a lobby waiting screen.
+Currently whilst a user is waiting for a game they remain in a command prompt
+until the game is filled, with no feedback how many players are waiting or
+how many more are needed to start a game. Only once the game starts does the
+graphical user inteface launch. If the network is not very active, a user
+might be stuck on this screen for a while, wondering if the program is working
+or not. A graphical user interface for a lobby waiting system could be
+developed, allowing users to view how many people are online, how many
+people are waiting for a game, and how many people are currently in a game.
+This would also allow for users to easily select different tables, potentially
+running different game modes.
+
+One final user experience improvement could be balance storing. Currently,
+a user starts with 1000 chips and regardless of if they gain or lose chips
+in the game, when they start another game they are restored to 1000 chips.
+If a database was utilized, we could allow users to have accounts to store
+their balances, allowing them to rack up larger amounts of chips by winning
+multiple times. This would have to be balanced by allowing tables with
+different minimum bets, and max allowed balance, to prevent users with
+large chips using their wealth advantage to bully smaller holders with constant
+large raises.
+
+In regards to the AI, this is currently implemented as just aa simple rule
+based algorithm, where it bets upon the calculated value of its hand and nothing
+more. This could be extended by making the AI randomly attempt to bluff when
+it has a poor hand, to prevent a player being able to counteract the bot's
+playstyle by simply folding whenver the AI makes large bets and matching when
+the AI makes medium bets and the player has a good hand.
+
+Another more ambitious upgrade would be to create the AI using machine learning
+techniques, and exploring a powerful AI that is able to challenge the best
+human players at poker performance. An initial version of this was attempted
+using tensorflow and python, but was shortly abandoned to focus on other
+features.
+
+\subsection{Project Achievements}
+%The original goal for this project was to create 
+The project has pivoted from its original goals somewhat. Initially, the intent
+was to simply make a poker application and a strong AI\@. However, whilst
+developing the program, the choice of shuffle algorithms and random sources
+was encountered, and was considered a valuable area to investigate. The
+role of AI was pivoted from allowing users to practice their gameplay into
+a system for automatically testing the software, and investigating the
+effect of the previously mentioned algorithms and random sources. The goal
+to create a strong AI with machine learning is still a very interesting one,
+and could be explored in the future.
