@@ -42,7 +42,7 @@ Another improvement on the user experience could be a lobby waiting screen.
 Currently whilst a user is waiting for a game they remain in a command prompt
 until the game is filled, with no feedback how many players are waiting or
 how many more are needed to start a game. Only once the game starts does the
-graphical user inteface launch. If the network is not very active, a user
+graphical user interface launch. If the network is not very active, a user
 might be stuck on this screen for a while, wondering if the program is working
 or not. A graphical user interface for a lobby waiting system could be
 developed, allowing users to view how many people are online, how many
@@ -53,18 +53,18 @@ running different game modes.
 One final user experience improvement could be balance storing. Currently,
 a user starts with 1000 chips and regardless of if they gain or lose chips
 in the game, when they start another game they are restored to 1000 chips.
-If a database was utilized, we could allow users to have accounts to store
+If a database was utilised, we could allow users to have accounts to store
 their balances, allowing them to rack up larger amounts of chips by winning
 multiple times. This would have to be balanced by allowing tables with
 different minimum bets, and max allowed balance, to prevent users with
 large chips using their wealth advantage to bully smaller holders with constant
 large raises.
 
-In regards to the AI, this is currently implemented as just aa simple rule
+In regards to the AI, this is currently implemented as just a simple rule
 based algorithm, where it bets upon the calculated value of its hand and nothing
 more. This could be extended by making the AI randomly attempt to bluff when
-it has a poor hand, to prevent a player being able to counteract the bot's
-playstyle by simply folding whenver the AI makes large bets and matching when
+it has a poor hand, to prevent a player being able to counteract the AI's
+play-style by simply folding whenever the AI makes large bets and matching when
 the AI makes medium bets and the player has a good hand.
 
 Another more ambitious upgrade would be to create the AI using machine learning
@@ -74,13 +74,21 @@ using tensorflow and python, but was shortly abandoned to focus on other
 features.
 
 \subsection{Project Achievements}
-%The original goal for this project was to create 
-The project has pivoted from its original goals somewhat. Initially, the intent
-was to simply make a poker application and a strong AI\@. However, whilst
+The original goal for this project was to create a comprehensive software
+solution to allow people to player poker, and a strong AI for the users to
+practice their skills against.
+
+The project has pivoted from its original goals somewhat. Whilst
 developing the program, the choice of shuffle algorithms and random sources
 was encountered, and was considered a valuable area to investigate. The
 role of AI was pivoted from allowing users to practice their gameplay into
 a system for automatically testing the software, and investigating the
 effect of the previously mentioned algorithms and random sources. The goal
 to create a strong AI with machine learning is still a very interesting one,
-and could be explored in the future.
+and could be explored in the future. In this way, the project has shifted
+from a user orientated software to a more investigative role and has made
+some interesting discoveries. The software is still perfectly usable to play
+poker however, and furthermore the AI developed performs decently against
+human players. This does allow the users to still attempt to practice their
+skills against it, but without having a strong AI there is only so much they
+can learn before they will be easily outperforming the AI\@.

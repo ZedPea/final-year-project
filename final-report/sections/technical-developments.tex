@@ -1,8 +1,10 @@
 \section{Technical Developments}
 
+%%%%%%%%%%%%%%%%%%%%
 \subsection{Testing}
+%%%%%%%%%%%%%%%%%%%%
 To test the poker server, and ensure that the gameplay is correct, the
-Haskell testing framework QuickCheck\cite{claessen2000} was used. This
+Haskell testing framework QuickCheck\parencite{claessen2000} was used. This
 framework uses automated testing of functions using random input data to
 verify properties. For example, suppose we want to test the function which
 prompts the user for an amount to bed, then makes that bet. We can define a
@@ -57,16 +59,16 @@ can ensure that our primitive building blocks are valid, and then use automated
 block box testing to hit some of the rarer code paths and ensure that they
 too are valid.
 
-\newpage{}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Experimental Design}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 To test out the effects of the shuffle algorithms and random sources, multiple
 testing programs have been created. The first method is a simple shuffle
 tester. A shuffle method is chosen, along with a source of randomness. Then,
 multiple hands are dealt using the selected shuffle and random source, and
 the cards picked are recorded, and displayed in a graph format.
 
-[Insert image here]
+\textbf{INSERT IMAGE HERE}
 
 For each combination, we record the number of each card drawn, the total
 number of cards drawn, the mean cards of each type drawn, the standard
@@ -77,9 +79,9 @@ how uniform a shuffle or random source is. As we increase the amount of
 shuffles performed, the mean will increase, and the standard deviation will
 decrease, so given an unbiased shuffle, this will tend towards a CV of 0.
 
-TODO: FILL OUT THIS TABLE
+\textbf{TODO: FILL OUT THIS TABLE}
 
-\begin{table}[h]
+\begin{table}[H]
     \centering
     \begin{tabular}{l l l l}
     \toprule
@@ -94,7 +96,7 @@ TODO: FILL OUT THIS TABLE
              random source}
 \end{table}
 
-TODO: ADD COMMENTS ON THE ABOVE RESULTS
+\textbf{TODO: ADD COMMENTS ON THE ABOVE RESULTS}
 
 Secondly, to evaluate gameplay effects of these shuffles, two AI's were used.
 The first, was the control AI, and would simply call any bet. The second
@@ -104,9 +106,9 @@ correspondingly. This AI was then run, using each of the algorithms and
 random sources against the control AI, and the win percentage was recorded,
 after 1000 trials of each.
 
-TODO: FILL OUT THIS TABLE
+\textbf{TODO: FILL OUT THIS TABLE}
 
-\begin{table}[h]
+\begin{table}[H]
     \centering
     \begin{tabular}{l l l l}
     \toprule
@@ -121,16 +123,16 @@ TODO: FILL OUT THIS TABLE
              call-any AI for each shuffle and random source}
 \end{table}
 
-TODO: ADD COMMENTS ON THE ABOVE RESULTS
+\textbf{TODO: ADD COMMENTS ON THE ABOVE RESULTS}
 
 Finally, if the poker server is launched with a flag, the shuffle and random
 source can be changed mid game, to see the live effect. Any updates to the
 shuffle and random source only apply once the current round is finished, to
 prevent corrupting the internal state of the card deck.
 
-\newpage{}
-
+%%%%%%%%%%%%%%%%%%%%%%
 \subsection{UI Design}
+%%%%%%%%%%%%%%%%%%%%%%
 Designing the graphical interface began with simple mockups. A simple
 initial diagram is shown below.
 
@@ -159,8 +161,6 @@ The players need some way to interact with the game, and simple buttons which
 lie under the poker table were used for this. The raise button brought some 
 complications, as the user has to enter a valid integer to increase the current
 bet to. Some constraints are placed on this parameter.
-
-\newpage
 
 \begin{itemize}
 \item The user must have enough chips to make the raise
@@ -273,13 +273,162 @@ digest at their own pace.
 
 \newpage{}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{System design}
+%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Not sure what should go here yet.
 
 \newpage{}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{System Implementation of Simple AI's}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Three simple AI's were developed during the development of the software system.
+Firstly, an AI framework was created. This handled communication with the
+server and startup, requiring an AI to only implemented one single function,
+that returns the chosen action of the AI to the server. This function takes
+as an argument an array of valid actions, so the AI doesn't have to determine
+which actions are valid within the current context. This framework turned out
+to be very advantageous later on, when some simple control AI's were wanted
+to be implemented. Two of the three AI's developed are trivial to implement
+and explain. The first, would simply choose one of the valid actions at
+random and return it. In the case that it chose raising as the action, it
+would raise a random amount between the minimum raise and the AI's total
+balance.
+
+Algorithm~\ref{code:randomai} describes this programs high level execution.
+
+\vspace{0.3cm}
+
+\begin{algorithm}[H]
+    \SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
+    \Input{An array of valid actions $actions$}
+    \Output{A single action $action$}
+    \BlankLine{}
+    \nlset{STEP 1} $randomNum \leftarrow getRandomNum(0, length(actions))$\;
+    \nlset{STEP 2} $action \leftarrow actions[randomNum]$\;
+    \nlset{STEP 3} \If{$action$ == $raise$}{
+                        $action.raiseAmount \leftarrow getRandomNum(state.minimumRaise, player.balance)$\;
+                   }
+    \nlset{STEP 4} return $action$\;
+\caption{Implementation of an AI that picks a random action}%
+\label{code:randomai}
+\end{algorithm}
+
+\vspace{0.3cm}
+
+We can see here the power of the AI framework, allowing a full client to connect
+to the server, exchange messages with it, and be able to choose how to bet
+in only four simple lines of code.
+
+The second AI, the control AI, is even simpler. This AI simply matches every
+bet, and is used to measure the other AI's performance in a percentage of
+win rate. Algorithm~\ref{code:controlai} describes this programs high level
+execution.
+
+\vspace{0.3cm}
+
+\begin{algorithm}[H]
+    \SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
+    \Input{An array of valid actions $actions$}
+    \Output{A single action $action$}
+    \BlankLine{}
+    \nlset{STEP 1} \If{$call$ \text{is member of} $actions$}{
+                        return $call$\;
+                   }
+                   \If{$check$ \text{is member of} $actions$}{
+                        return $check$\;
+                   }
+                   \If{$raise$ \text{is member of} $actions$}{
+                        return $raise$\;
+                   }
+                   \Else{
+                        return $allin$\;
+                   }
+\caption{Implementation of an control AI that always matches any bet}%
+\label{code:controlai}
+\end{algorithm}
+
+\vspace{0.3cm}
+
+Finally we have the rule based AI, which is relatively good at the game and
+can beat amateur players at poker. This AI calculates the value of its hand
+relative to the table's hand. For example, if there is a straight (Five cards
+in a row) in the community cards, that is a powerful hand, but because it
+is from the community cards, everyone else also has that hand. Hence, we need
+to calculate how strong the AI's cards are in unison with the community cards.
+The AI then simply alters the amount it is willing to bet or call based on the
+calculated value of the hand. It will bet larger amounts with better hands,
+and if its hand is weak, it will fold when the bet is raised. Due to this
+simplistic approach to the game, it reveals a large amount of information
+about its hand based on it's bets. If the AI consistently bets large amounts,
+it has a strong hand from the beginning. If it bets nothing initially then
+starts betting after a card is revealed, it is easy for the other players to
+narrow down what possible hands they have. To improve this, the AI could
+make occasional bluffs. Another mitigation would be to have set bet sizes,
+for example a small, medium, and large bet size where the nearest one is rounded
+to when the value is calculated. This causes less information to be leaked
+about the strength of the AI's hand when they bet. Finally, if a large increase
+in the value of the hand is detected, the AI could lower their bet to the smaller
+bet size and ramp up the bet size as the rounds go on. This prevents revealing
+that the AI's hand value has suddenly increased.
+Algorithm~\ref{code:rule-based-ai} describes this programs high level execution.
+
+\vspace{0.3cm}
+
+\begin{algorithm}[H]
+    \SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
+    \Input{An array of valid actions $actions$}
+    \Output{A single action $action$}
+    \BlankLine{}
+    \nlset{STEP 1} $evAllCards \leftarrow evaluateCards(player.cards + state.cards)$\;
+    \nlset{STEP 2} $evCommunityCards \leftarrow evaluateCards(state.cards)$\;
+    \nlset{STEP 3} $betSize \leftarrow evAllCards - evCommunityCards$\;
+    \nlset{STEP 4} \If{$betSize$ $<$ 0 \&\& $check$ \text{is member of} $actions$}{
+                        return $check$\;
+                   }
+                   \If{$betSize$ $<$ 0}{
+                        return $fold$\;
+                   }
+                   \If{$betSize$ $>=$ $state.minimumRaise$ + $state.currentBet$ \&\& $player.balance$ $>=$ $betSize$}{
+                        return $raise(betSize)$\;
+                   }
+                   \If{$betSize$ $>=$ $state.bigblind$ $*$ 100} {
+                        return $allin$\;
+                   }
+                   \If{$betSize$ $>=$ $state.currentBet$ \&\& $check$ \text{is member of} $actions$}{
+                        return $check$\;
+                   }
+                   \If{$betSize$ $>=$ $state.currentBet$ \&\& $player.balance$ $>=$ $betSize$}{
+                        return $call$\;
+                   }
+                   \If{$check$ \text{is member of} $actions$}{
+                        return $check$\;
+                   }
+                   \Else{
+                        return $fold$\;
+                   }
+\caption{Implementation of a rule based AI}%
+\label{code:rule-based-ai}
+\end{algorithm}
+
+\vspace{0.3cm}
+
+As you can see, the AI is relatively simple and is just based off a few rules.
+All the AI does is choose the most optimal action based of the target bet
+value. For example, if the target bet is above the current bet and the AI
+has enough chips, it should raise. If it doesn't have enough chips, it should
+instead call. The code to calculate the target bet is taken from the
+poker-eval \parencite{code:dachary2004} library, which was chosen to allow
+AI's to be developed quickly. A similar library to this was developed to
+evaluate a hand of cards in comparison to another hand of cards, for determining
+who has the strong hand, however this only creates an order, and not a
+numerical value determining the relative strength of a hand.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{System Implementation of Randomness and Shuffling}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 In the game of poker, the house does not wager against players. In each
 poker hand, a player always wins, unlike other popular casino games, such as 
 blackjack or roulette. Instead the usual method for online poker companies and
@@ -326,8 +475,6 @@ selecting cards are:
     \item Storing an array of all the cards and indexing this array in some way to take a card
     \item Shuffling an array in some way and taking the top item
 \end{itemize}
-
-\newpage
 
 It was hypothesised that the random number implementation and card picking
 algorithms could effect the cards generated, and potentially lead to a more
