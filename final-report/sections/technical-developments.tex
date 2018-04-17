@@ -68,7 +68,11 @@ tester. A shuffle method is chosen, along with a source of randomness. Then,
 multiple hands are dealt using the selected shuffle and random source, and
 the cards picked are recorded, and displayed in a graph format.
 
-\textbf{INSERT IMAGE HERE}
+\begin{figure}[h]
+    \frame{\includegraphics[width=\linewidth]{../images/shuffletester.png}}
+    \caption{The shuffle tester program}%
+    \label{fig:shuffletester}
+\end{figure}
 
 For each combination, we record the number of each card drawn, the total
 number of cards drawn, the mean cards of each type drawn, the standard
@@ -79,7 +83,23 @@ how uniform a shuffle or random source is. As we increase the amount of
 shuffles performed, the mean will increase, and the standard deviation will
 decrease, so given an unbiased shuffle, this will tend towards a CV of 0.
 
-\textbf{TODO: FILL OUT THIS TABLE}
+Another interesting way to represent the shuffle tester data is to look at
+the frequency of the amount of cards picked. We can group the data into
+the amount of cards drawn, and then see how many times this occurs for a given
+group. Figure~\ref{fig:shuffletester2} shows this alteration to the shuffle
+tester.
+
+\begin{figure}[h]
+    \frame{\includegraphics[width=\linewidth]{../images/shuffletester2.png}}
+    \caption{The modified shuffle tester program}%
+    \label{fig:shuffletester2}
+\end{figure}
+
+As you can see, the chart follows a typical normal distribution. Most cards are
+picked an average amount, with a few cards being picked a lesser amount or
+a greater amount. This gives us an easier way to easily see by eye how spread
+out the data set is - a uniform shuffle and random source will give a normal
+distribution with a very small standard deviation.
 
 \begin{table}[H]
     \centering
@@ -87,16 +107,24 @@ decrease, so given an unbiased shuffle, this will tend towards a CV of 0.
     \toprule
                 & RandomIndex   & Knuth & RandomSort  \\
     \midrule
-    LEucyer     & 0             & 0     & 0           \\ \addlinespace
-    Mersenee    & 0             & 0     & 0           \\ \addlinespace
-    MWC256      & 0             & 0     & 0           \\ \addlinespace
+    LEucyer     & 0.0054        & 0.0049& 0.0059      \\ \addlinespace
+    Mersenee    & 0.0053        & 0.0062& 0.0059      \\ \addlinespace
+    MWC256      & 0.0051        & 0.0061& 0.0062      \\ \addlinespace
     \bottomrule
     \end{tabular}
-    \caption{The average CV after running 1000 trials for each shuffle and
-             random source}
+    \caption{The average CV for each shuffle and random source after 100,000
+             iterations}
 \end{table}
 
-\textbf{TODO: ADD COMMENTS ON THE ABOVE RESULTS}
+As the above results show, there is not a massive amount of difference between
+the CV of the shuffles. We see the RandomIndex algorithm gets consistently low
+CV's, followed by the Knuth algorithm, with RandomSort producing the highest
+CV. If we then look at the random sources, we see both MWC256 and Mersenne
+with an equal average CV, whilst LEucyer is slightly lower. This is odd, due
+to LEucyer having the smallest bit size and cycle length, and we would expect
+it to be a less effective RNG source. However, all these results are relatively
+close together, and depending on P values used, could be discarded as within
+the margin of error.
 
 Secondly, to evaluate gameplay effects of these shuffles, two AI's were used.
 The first, was the control AI, and would simply call any bet. The second
@@ -106,24 +134,31 @@ correspondingly. This AI was then run, using each of the algorithms and
 random sources against the control AI, and the win percentage was recorded,
 after 1000 trials of each.
 
-\textbf{TODO: FILL OUT THIS TABLE}
-
 \begin{table}[H]
     \centering
     \begin{tabular}{l l l l}
     \toprule
                 & RandomIndex   & Knuth & RandomSort  \\
     \midrule
-    LEucyer     & 0\%           & 0\%   & 0\%         \\ \addlinespace
-    Mersenee    & 0\%           & 0\%   & 0\%         \\ \addlinespace
-    MWC256      & 0\%           & 0\%   & 0\%         \\ \addlinespace
+    LEucyer     & 87.8\%        & 89.8\%& 90.4\%      \\ \addlinespace
+    Mersenee    & 89.0\%        & 89.0\%& 88.1\%      \\ \addlinespace
+    MWC256      & 90.1\%        & 89.7\%& 89.6\%      \\ \addlinespace
     \bottomrule
     \end{tabular}
     \caption{The win percentage of the rule-based-ai against the control
              call-any AI for each shuffle and random source}
 \end{table}
 
-\textbf{TODO: ADD COMMENTS ON THE ABOVE RESULTS}
+As we can see, changing the shuffle type or random source doesn't appear to
+effect the outcome very heavily, which is to be expected - even if the cards
+were drawn in a slightly different way, we would see both players getting
+altered cards, and so the effect would be mitigated. What we can see from this
+data however, is that the rule based AI is relatively effective, winning on
+average 89 games out of 100. Whilst the opponent it is playing against is very
+trivial, this is sufficient to show that the AI is playing in a sane way, and
+is very successful against weak opponents. In the future, it could be beneficial
+to test the rule based AI against a large number of human opponents, to see
+how effective it is in a real world scenario.
 
 Finally, if the poker server is launched with a flag, the shuffle and random
 source can be changed mid game, to see the live effect. Any updates to the
