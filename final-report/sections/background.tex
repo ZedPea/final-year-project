@@ -21,10 +21,117 @@ poker from the table to the computer.
 \subsection{Comparison of Technologies}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\subsubsection{Programming Language}
+
+The software developed for this report is relatively operating system and
+programming language agnostic, and so multiple different ones were considered.
+
+\begin{table}[H]
+    \begin{adjustbox}{center}
+    \begin{tabular}{l l l l l}
+    \toprule
+    Language             & Experience  & Type System            & Development Speed & Paradigm          \\
+    \midrule
+    Haskell              & Experienced & Strongly, Statically   & Medium            & Functional        \\ \addlinespace
+    C\#                  & Experienced & Strongly, Statically   & Medium            & OOP               \\ \addlinespace
+    Golang               & Low         & Strongly, Statically   & Slow              & Procedural        \\ \addlinespace
+    C                    & Medium      & Weakly, Statically     & Slow              & Procedural        \\ \addlinespace
+    Python               & Medium      & Strongly, Dynamically  & Fast              & OOP, Procedural   \\ \addlinespace
+    C++                  & Medium      & Strongly, Statically   & Slow              & OOP, Procedural   \\ \addlinespace
+    \bottomrule
+    \end{tabular}
+    \end{adjustbox}
+    \caption{The differences of known programming languages}
+\end{table}
+
+It was decided to use a language with strong, static typing, due to this
+class of typing preventing a large class of bugs at runtime, instead being
+caught at compile time. This left Haskell, C\#, Golang, and C++. To narrow it
+down, the languages the developer was less experienced in were abandoned,
+and out of Haskell and C\#, Haskell was chosen, due to the functional paradigm
+leading to ease of testing smaller isolated modules, high levels of code
+reuse, and less bugs, due to immutable state.
+
+\subsubsection{GUI Toolkit}
+
+Once a programming language had been decided on, a library to develop the
+graphical user interface was needed. Some of these libraries only run on
+certain operating systems, and have different levels of difficulty and
+boilerplate code required to use them.
+
+\begin{table}[H]
+    \begin{adjustbox}{center}
+    \begin{tabular}{l l l}
+    \toprule
+    GUI Toolkit & Language Interface    & Development Speed & Supported OS's        \\
+    \midrule
+    GTK         & Haskell               & Medium            & Linux, OSX            \\ \addlinespace
+    QtQuick     & Javascript + Haskell  & Fast              & Linux, OSX, Windows   \\ \addlinespace
+    wxWidgets   & Haskell               & Medium            & Linux, OSX, Windows   \\ \addlinespace
+    SDL2        & Haskell               & Slow              & Linux, OSX, Windows   \\ \addlinespace
+    \bottomrule
+    \end{tabular}
+    \end{adjustbox}
+    \caption{The differences of possible GUI toolkits}
+\end{table}
+
+All of the toolkits looked at have a Haskell library interface, as is needed
+to work with the rest of the code. QtQuick however is unique in that the GUI
+interface is written in JavaScript, then the interactions with it can be
+programmed from both JavaScript and/or Haskell. Due to Haskell being a language
+that has immutable by default variables, it is often cumbersome to utilise
+graphical libraries, however, with QtQuick, the GUI can be quickly prototyped
+in JavaScript, and then the GUI data (cards, player names, etc), can be filled
+from the Haskell side. Due to the amount of GUI code being quite minimal, the
+weakly typed JavaScript is not much of an issue to debug. For these reasons,
+QtQuick was chosen for the GUI framework.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Problem Context: How To Play Poker}
+\subsection{Problem Context}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\subsubsection{Randomness}
+In this report we will talk a lot about different random sources. By this we
+mean a library of function that provides random numbers, using a certain
+algorithm. Each of these algorithms have a few properties that set them apart
+from different ones, most notably:
+
+\begin{itemize}
+\item Bit Size
+\item Cycle Length
+\end{itemize}
+
+When we generate random numbers, we use a pseudo random number generator
+(Henceforth prng). These
+use an algorithm to determine a number from the previous one, and they all
+eventually loop back to the start of the cycle. If we provide a seed to one
+of these generators, it provides us a set start point into the generator, after
+which the sequence of random numbers is always the same. This can be helpful
+to reproduce exact program results, for example for debugging. If the seed
+size is for example, 8 bits, then there are only 256 possible beginnings to
+the sequence. Therefore, when we create and seed our generator, whilst it may
+appear that we are getting lots of different random numbers, we are only
+in fact getting 256 different sequences of numbers. One way to avoid this is
+by reseeding the generator between each call of the prng, however this is
+generally very slow, and so not viable in performant applications. For
+simplicity, if we say that the prng is seeded at the beginning of each shuffle,
+we can therefore generate only the amount of shuffles as the size of our seed,
+whilst there are
+$52! = 80658175170943878571660636856403766975289505440883277824000000000000$
+possible shuffles. Some shuffles however, use much larger internal bit sizes than
+the bit size of the outputs, for example, Multiply With Carry 256 \parencite{marsaglia2003}
+uses an internal bit size of 256 bits as the name suggests.
+
+Secondly we can talk about the cycle length. This is the period that the prng
+lasts for, before the numbers start repeating. For example, if we had a prng
+with a cycle length of 10, we would be able to get 10 random numbers, before
+the generator would loop back to the first of the ten random numbers again.
+Most modern generators have very large cycle lengths, but this should be taken
+care of, as if the usage of the random number generator is predictable, after
+a system has been online for a long time, it is possible to predict new values
+based on previous values.
+
+\subsubsection{The game of Poker}
 Each player is dealt two cards, and the player to the left of the dealer must
 pay a small bet, called the small blind, with the player to his left paying 
 double this bet, the big blind. Play then proceeds clockwise from the next
