@@ -1,10 +1,53 @@
 \section{Introduction}
-This report will set out to detail the developed software: A poker server,
-client with GUI, and test programs to illustrate the performance of different
-card picking algorithms and sources of randomness. The reasons behind design
-and architectural choices, along with evidence to support these, assisted by
-the extra programs will be detailed. Sections covered will be the current
-progression of the project according to the previously created time plan, the
-gameplay, creating an online poker GUI interface, a simple rule based AI,
-and an in depth look at randomness, pseudo-random number generation,
-card generation, the correctness of the deal, and shuffle bias.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Project Environment}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Poker has become a very popular game to play both online, and in real life.
+Many different companies offer online poker software, with the opportunity
+to gamble real money with ease. Christian Capital Advisors reported that
+online poker revenues were \$2.4 billion in 2005 \parencite{website:newsweek2005},
+and the popular online poker vendor, PokerStars, were acquired for \$4.9 billion
+in 2014. \parencite{website:heinter2014}
+
+Whilst these large amounts of money are being gambled, very little has been
+investigated into the security of the software used. \parencite{arkin1999}
+shows how bad random number generation can be exploited to cheat in online
+poker.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Project Goals}
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+This report will set out some of the issues and pitfalls with developing an
+online poker software suite, especially in relation to randomness and shuffling.
+Solid testing tools will be looked at, including the use of AI to test rare
+code paths rapidly. The reasons behind design choices and architectural choices, along with
+evidence to support these will be detailed.
+
+This report has six sections that will be covered, detailing each section of
+the project. They are as follows.
+
+\begin{itemize}
+    \item Introduction - Introduces the project
+    \item Aims and Objectives - Highlights what the project wishes to achieve
+    \item Background - Describe the problem context and compare some technologies available
+    \item Technical Development - Will discuss the design, testing, and implementation of the software
+    \item Evaluation - A summary of the project progress, and what further work could be explored
+    \item Conclusion - A final review of the project and what has been achieved
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%
+\subsection{Use Case}
+%%%%%%%%%%%%%%%%%%%%%
+
+A programmer or team of programmers can use this software as a reference
+implementation when designing a poker game or similar gambling software. They
+can experiment with the different shuffling algorithms and random sources
+used to find those which provide a sufficient level of randomness and security
+of the deal. They can utilise the automated testing facilities developed to
+test their own software and ensure it is bug free, and finally, they can
+use the developed network protocol to allow easy interoperability with both
+their software and this software, for simple drop in support with alternative
+clients and servers.

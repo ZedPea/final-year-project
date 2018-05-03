@@ -13,9 +13,136 @@ poker from the table to the computer.
 \subsection{Comparison of Algorithms}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+Three different shuffling algorithms have been developed to examine in this
+report. Here we will look about the differences between them, and the demand
+upon memory and compute resources. We have three different card picking
+algorithms, Knuth Shuffle, RandomSort Shuffle, and RandomIndex. RandomIndex
+is unique in that instead of shuffling the deck, it picks a random card
+from the deck on demand.
+
+\vspace{0.3cm}
+
+\begin{algorithm}[H]
+    \SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
+    \Input{A deck of cards, $deck$}
+    \Output{A shuffled deck of cards}
+    \BlankLine{}
+    \nlset{STEP 1} \For{$i \leftarrow 0$ \KwTo{} $len(deck)$}{
+    \nlset{STEP 2}      $swap(deck, i, random(i, len(deck))$\;
+                   }
+\caption{The knuth shuffle algorithm}
+\label{code:knuthshuffle}
+\end{algorithm}
+
+\vspace{0.3cm}
+
+The first algorithm, the knuth shuffle, as seen in algorithm~\ref{code:knuthshuffle},
+is very simple to understand, and produces a true shuffle, provided the
+random number generator has at least 226 bits of internal state, to produce all
+the possible permutations of a 52-card deck. ($52! \approx 2^{225.6}$) \parencite{arkin1999}
+
+If the algorithm is implemented correctly, with the changes implemented by
+\parencite{richard1964}, then the algorithm time complexity is reduced from
+$O(n^2)$ to $O(n)$. In addition, this algorithm has a memory complexity of
+$O(1)$.
+
+\vspace{0.3cm}
+
+\begin{algorithm}[H]
+    \SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
+    \Input{A deck of cards, $deck$}
+    \Output{A shuffled deck of cards}
+    \BlankLine{}
+    \nlset{STEP 1} $tmp \leftarrow []$\;
+    \nlset{STEP 2} \For{$i \leftarrow 0$ \KwTo{} $len(deck)$}{
+    \nlset{STEP 3}      $tmp[i] \leftarrow (i, random(0, RAND\_MAX)$\;
+                   }
+    \nlset{STEP 4} sortBy($tmp$, snd)\;
+    \nlset{STEP 5} $deck \leftarrow map (fst) tmp$\;
+\caption{The random sort shuffle algorithm}
+\label{code:randomsort}
+\end{algorithm}
+
+\vspace{0.3cm}
+
+The random sort shuffle, as seen in algorithm~\ref{code:randomsort} is not as
+simple as the knuth shuffle, but still easy enough to understand. Each card
+is assigned a random number, then the deck of cards is sorted based on the
+random number. Due to Haskell being a lazy language, the complexity of this
+algorithm is somewhat difficult to determine. The complexity of the sort
+function is $O($n log k$)$, where k is the number of elements inspected. The
+sort function is called on demand, so if a list is sorted, but never inspected,
+no work is ever done. If only the first element is inspected, then the
+complexity is $O(n)$. In the worst case, this algorithm is $O($n log n$)$.
+This function has $O(n)$ memory usage, for the random numbers stored before
+the list is sorted.
+
+\vspace{0.3cm}
+
+\begin{algorithm}[H]
+    \SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
+    \Input{A deck of cards, $deck$}
+    \Output{A random card}
+    \BlankLine{}
+    \nlset{STEP 1} return $deck[random(0, len(deck))]$\;
+\caption{The random index card picking algorithm}
+\label{code:randomsort}
+\end{algorithm}
+
+\vspace{0.3cm}
+
+This random index card picking algorithm is the simplest of them all. It simply
+picks a random card from the deck and returns it, on demand, instead of
+shuffling the deck. This trades off an up front time cost for shuffling, for
+a smaller, more frequent cost, when cards are needed. In most cases, this
+total time should be smaller than shuffling the whole deck, as a full deck
+of cards is not needed, except with a very large amount of players in the game
+of poker. This algorithm has a complexity of $O(1)$, and a memory complexity
+of $O(1)$.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Alternative Solutions}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+As previously mentioned, there are many different online poker software's
+available. Here, we will look at some vendors offerings.
+
+\begin{figure}[H]
+    \frame{\includegraphics[width=\linewidth]{../images/pokerstars.png}}
+    \caption{PokerStars poker software}%
+    \label{fig:pokerstars}
+\end{figure}
+
+Figure~\ref{fig:pokerstars} shows the software produced by Poker Stars, one
+of the leading poker software creators. Whilst the software itself is
+featureful, and is available for Windows, macOS, Android, and iOS, the code
+is closed source, and the shuffling algorithms or random number generator
+implementation is not available for inspection. However, their RNG and its
+implementation of the shuffling of cards has been verified by a third party,
+Gaming Laboratories. \parencite{website:gaminglabs2015}
+
+\begin{figure}[H]
+    \frame{\includegraphics[width=\linewidth]{../images/holdingnuts.png}}
+    \caption{HoldingNuts poker software}%
+    \label{fig:holdingnuts}
+\end{figure}
+
+Figure~\ref{fig:holdingnuts} shows the software produced by Holding Nuts, an
+open source poker client and server. Whilst this software is a lot less
+advanced than the software offered by Poker Stars, due to it being open source,
+we can inspect its shuffle algorithm, and random number generator. However,
+upon inspecting the code, we find it simply uses the libpoker \parencite{code:dachary2004}
+library, and only offers one shuffle, with one algorithm source.
+
+Furthermore, whilst the code is open, the reasons behind implementation details
+are not specified, so third parties may not understand the reason behind choices
+of algorithms, and the subtleties involved to create a fair shuffle.
+
+Whilst this software
+is very helpful for people implementing open source clients, for people wishing
+to develop closed source clients, the software is licensed under the GNU
+GPL, and so they would be unable to use any code without also licensing their
+code under the GPL\@.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Comparison of Technologies}
@@ -61,7 +188,7 @@ boilerplate code required to use them.
 
 \begin{table}[H]
     \begin{adjustbox}{center}
-    \begin{tabular}{l l l}
+    \begin{tabular}{l l l l}
     \toprule
     GUI Toolkit & Language Interface    & Development Speed & Supported OS's        \\
     \midrule
@@ -131,7 +258,7 @@ care of, as if the usage of the random number generator is predictable, after
 a system has been online for a long time, it is possible to predict new values
 based on previous values.
 
-\subsubsection{The game of Poker}
+\subsubsection{The Game of Poker}
 Each player is dealt two cards, and the player to the left of the dealer must
 pay a small bet, called the small blind, with the player to his left paying 
 double this bet, the big blind. Play then proceeds clockwise from the next
