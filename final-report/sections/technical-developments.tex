@@ -3,6 +3,9 @@
 %%%%%%%%%%%%%%%%%%%%
 \subsection{Testing}
 %%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{QuickCheck}
+
 To test the poker server, and ensure that the gameplay is correct, the
 Haskell testing framework QuickCheck\parencite{claessen2000} was used. This
 framework uses automated testing of functions using random input data to
@@ -41,6 +44,8 @@ networks or databases (as there is no obvious sane way to do so), and so we
 would have to manually define a large mockup system to simulate a database
 and a network connection.
 
+\subsubsection{Black Box Testing}
+
 To resolve these issues, another way of testing the system is black box
 testing, which we can semi automate using the developed AI's. A user only
 has a very few select inputs they can make, and at any point in the game,
@@ -63,7 +68,11 @@ too are valid.
 \subsection{Experimental Design}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 To test out the effects of the shuffle algorithms and random sources, multiple
-testing programs have been created. The first method is a simple shuffle
+testing programs have been created.
+
+\subsubsection{Shuffle Tester Overview}
+
+The first method is a simple shuffle
 tester. A shuffle method is chosen, along with a source of randomness. Then,
 multiple hands are dealt using the selected shuffle and random source, and
 the cards picked are recorded, and displayed in a graph format.
@@ -119,12 +128,14 @@ distribution with a very small standard deviation.
 As the above results show, there is not a massive amount of difference between
 the CV of the shuffles. We see the RandomIndex algorithm gets consistently low
 CV's, followed by the Knuth algorithm, with RandomSort producing the highest
-CV. If we then look at the random sources, we see both MWC256 and Mersenne
+CV\@. If we then look at the random sources, we see both MWC256 and Mersenne
 with an equal average CV, whilst LEucyer is slightly lower. This is odd, due
 to LEucyer having the smallest bit size and cycle length, and we would expect
 it to be a less effective RNG source. However, all these results are relatively
 close together, and depending on P values used, could be discarded as within
 the margin of error.
+
+\subsubsection{Automated AI Testing}
 
 Secondly, to evaluate gameplay effects of these shuffles, two AI's were used.
 The first, was the control AI, and would simply call any bet. The second
@@ -168,6 +179,9 @@ prevent corrupting the internal state of the card deck.
 %%%%%%%%%%%%%%%%%%%%%%
 \subsection{UI Design}
 %%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Design}
+
 Designing the graphical interface began with simple mockups. A simple
 initial diagram is shown below.
 
@@ -250,6 +264,8 @@ windows with configurable text, and a quit button. Both the win window
 and the loss window use the same component, with only differing text. This
 keeps the GUI consistent, and thus increases user acceptance.
 
+\subsubsection{Implementation}
+
 Once the mockups had been completed the GUI was implemented in QtQML,
 and hooked up to the Haskell code so it was fully usable and could be used
 to test the poker game. Figure~\ref{fig:actualgui} shows the GUI in use,
@@ -312,7 +328,142 @@ digest at their own pace.
 \subsection{System design}
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Not sure what should go here yet.
+\subsubsection{Module Design}
+
+The programming language, Haskell, instead of using classes for separation
+of concerns, uses modules. These are a self contained section of code, which
+exports any amount of functions that are defined internally. They can also
+export functions from other modules, to make meta-modules, which export
+large amounts of functions in a single module for ease of use. This feature
+was not utilised however, as one of the benefits of modules is the simplicity
+of discovering where different functions and sections of code are defined.
+
+For example, given the line of code shown in code fragment~\ref{code:import}, this
+import statement lets us know that the function dealCards is defined in the
+file Card.hs, in the Utilities folder. This removes some of the ambiguity
+present in many languages, where lots of externally defined functions are
+used, but it is not clear where to find the source code for them.
+
+\vspace{0.3cm}
+
+\begin{lstlisting}[label={code:import}, caption=An example import statement]
+import Utilities.Card (dealCards)
+\end{lstlisting}
+
+Figure~\ref{fig:interoper} shows a simple overview of how the modules interact.
+The server hosts the game, deals cards, processes winners, and allocates
+winnings, etc. It gets the input from the client framework, which is an
+abstraction over the network protocol.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../images/interoper.png}
+    \caption{The interaction of the system modules}%
+    \label{fig:interoper}
+\end{figure}
+
+It takes in all the messages from the
+server, and passes the needed ones to the client, or AI as applicable. For
+example, there are string messages which are passed to the client, to print
+to the logging window, for example "A raised the bet from 100 to 200", which
+are not needed for the AI, but are for the client GUI\@. AI Framework further
+abstracts over this, returning the correct values and updating the internal
+state as needed for messages which don't require the AI to interact. The AI's
+then define a function to handle any messages they want to process, in most
+cases this is simply the message requesting an input. The input is calculated
+by the AI,
+and passed back to the client framework, and then the server for processing.
+The client operates in much the same way, with the input instead being supplied
+by the user playing the game. This abstracted design makes it simple to
+add new clients or servers provided the same messages are handled on either
+side.
+
+\begin{wrapfigure}{r}{0.35\textwidth}
+    \begin{center}
+        \includegraphics[width=0.33\textwidth]{../images/hierarchy.png}
+    \end{center}
+\caption{The project file hierarchy}
+\label{fig:hierarchy}
+\end{wrapfigure}
+
+The file hierarchy for the project is shown in figure~\ref{fig:hierarchy}.
+In this we can see we have a few top level projects, AI, Client,
+Client Framework, Experiments, Server, and Types. Each of these projects have
+multiple modules, encapsulating the internal code and only exposing the
+functions needed to interact with the module, similar to public and private
+methods in an Object Orientated Language. The tool Haddock \parencite{marlow2002}
+was used to generate documentation automatically, which is very helpful for
+users of the software to easily find where functions are defined, what parameters
+they take, and what instances of type families they belong to. Figure~\ref{fig:modules}
+shows the module list generated by Haddock, and figure~\ref{fig:documentation}
+shows the automatic documentation generated by Haddock, showing some of the
+types available to programmers, and their constructors.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[h]{0.4\textwidth}
+        \includegraphics[width=0.775\textwidth]{../images/modules.png}
+        \caption{Module documentation}%
+        \label{fig:modules}
+    \end{subfigure}
+    \begin{subfigure}[h]{0.4\textwidth}
+        \includegraphics[width=\textwidth]{../images/documentation.png}
+        \caption{Code documentation}%
+        \label{fig:documentation}
+    \end{subfigure}
+    \caption{The documentation generated by Haddock}
+    \label{fig:haddock}
+\end{figure}
+
+The documentation also includes links to the source code, which is very helpful
+if a programmer wants to tell how part of the system has been implemented,
+without having to dig into each individual file, to find out exactly where
+it is defined. All of this we get for free, by simply running
+\begin{verbatim}
+"stack haddock
+--haddock --no-haddock-deps"
+\end{verbatim}
+
+This leads us on to talking about our project management tools.
+
+\subsubsection{Development Tools}
+
+When developing the code for this project, we used an array of project
+management tools, to make the code simple to build, easy to test, modify,
+and use. Firstly, the tool stack was used, for building our project.\parencite{code:stack2015}
+Stack
+automatically fetches and resolves dependencies, builds the project, tests
+the project, and benchmarks it. It is also integrated with many tools, such
+as Haddock, as mentioned previously. Often, users will want to install a
+program or library, but find that their operating system is not supported,
+or they have the wrong dependencies, which causes compilation to fail, or
+unexpected results to occur. This is easily avoided by using a tool such as
+stack, which lets the programmer define which libraries the program or library
+will function with, and then automatically fetching those, and building the
+project. This means the project is always buildable, and it will run as the
+developer intended.
+
+Secondly, the project uses the version control system Git.\parencite{code:torvalds2005}
+This allows the project to be easily modified by multiple people working at
+once, and provides simple tools to retrieve older versions of the code, for
+example if a bug was introduced in a newer version. Git also provides powerful
+tools to track down the cause of problems introduced into the codebase that
+were not previously there. For example, the git bisect command allows a user
+to go from a known "bad" commit (that introduced a bug for example) and a 
+known good commit, and track down which commit in between introduced the bug,
+automatically. This is a big boon for productivity, rather than having to manually
+inspect commit logs.
+
+Thirdly, the project uses continuous integration, to automatically build the
+project everytime a change is pushed to the git repository, to ensure that
+the project is always in a buildable state. This is done with the tool Travis
+CI, \parencite{code:travis2011}
+which provides a virtual build environment for multiple different operating
+systems, and emails the author when a build has failed. In addition, the
+current status of the project can be displayed on a homepage, or source tracker,
+so users can easily tell if the project is compilable, and if so, on what
+operating systems. This is very helpful to prevent code that only works on the
+development environment, and gives piece of mind to both developers and users.
 
 \newpage{}
 
@@ -327,7 +478,11 @@ as an argument an array of valid actions, so the AI doesn't have to determine
 which actions are valid within the current context. This framework turned out
 to be very advantageous later on, when some simple control AI's were wanted
 to be implemented. Two of the three AI's developed are trivial to implement
-and explain. The first, would simply choose one of the valid actions at
+and explain.
+
+\subsubsection{Random AI}
+
+The first AI, Random AI, would simply choose one of the valid actions at
 random and return it. In the case that it chose raising as the action, it
 would raise a random amount between the minimum raise and the AI's total
 balance.
@@ -356,6 +511,8 @@ Algorithm~\ref{code:randomai} describes this programs high level execution.
 We can see here the power of the AI framework, allowing a full client to connect
 to the server, exchange messages with it, and be able to choose how to bet
 in only four simple lines of code.
+
+\subsubsection{Control AI}
 
 The second AI, the control AI, is even simpler. This AI simply matches every
 bet, and is used to measure the other AI's performance in a percentage of
@@ -386,6 +543,8 @@ execution.
 \end{algorithm}
 
 \vspace{0.3cm}
+
+\subsubsection{Rule Based AI}
 
 Finally we have the rule based AI, which is relatively good at the game and
 can beat amateur players at poker. This AI calculates the value of its hand
@@ -464,6 +623,9 @@ numerical value determining the relative strength of a hand.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{System Implementation of Randomness and Shuffling}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Background}
+
 In the game of poker, the house does not wager against players. In each
 poker hand, a player always wins, unlike other popular casino games, such as 
 blackjack or roulette. Instead the usual method for online poker companies and
@@ -513,7 +675,11 @@ selecting cards are:
 
 It was hypothesised that the random number implementation and card picking
 algorithms could effect the cards generated, and potentially lead to a more
-predictable, non random game. For this reason, multiple algorithms and
+predictable, non random game.
+
+\subsubsection{Shuffle Tester}
+
+For this reason, multiple algorithms and
 different sources of randomness has been developed and tested, along with two
 complementary programs to test them. Firstly, a GUI which can be launched
 when the `--chooseshuffle' argument is given to the server, allows the card
@@ -591,6 +757,8 @@ level execution.
 \end{algorithm}
 
 \vspace{0.3cm}
+
+\subsubsection{Random Sources}
 
 The three sources of randomness used are:
 
@@ -715,6 +883,8 @@ Algorithm~\ref{code:rngGoodCapping} \parencite{website:reich2011}.
 
 To an extent this demonstrates how easy it would for poker software to have
 biased distributions if rigorous testing procedures were not in place.
+
+\subsubsection{Exploiting The Game of Poker}
 
 After implementing the above shuffle tester, and comparing the results,
 it was concluded that all shuffles and sources of randomness appear at face

@@ -5,10 +5,6 @@ algorithms and design decisions that went into them. This project will go
 into depth on some of the issues that are faced when converting the game of
 poker from the table to the computer.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Processes and Methodology}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Comparison of Algorithms}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -19,6 +15,8 @@ upon memory and compute resources. We have three different card picking
 algorithms, Knuth Shuffle, RandomSort Shuffle, and RandomIndex. RandomIndex
 is unique in that instead of shuffling the deck, it picks a random card
 from the deck on demand.
+
+\subsubsection{Knuth Shuffle}
 
 \vspace{0.3cm}
 
@@ -45,6 +43,8 @@ If the algorithm is implemented correctly, with the changes implemented by
 \parencite{richard1964}, then the algorithm time complexity is reduced from
 $O(n^2)$ to $O(n)$. In addition, this algorithm has a memory complexity of
 $O(1)$.
+
+\subsubsection{Random Sort Shuffle}
 
 \vspace{0.3cm}
 
@@ -77,6 +77,8 @@ complexity is $O(n)$. In the worst case, this algorithm is $O($n log n$)$.
 This function has $O(n)$ memory usage, for the random numbers stored before
 the list is sorted.
 
+\subsubsection{Random Index Card Picking}
+
 \vspace{0.3cm}
 
 \begin{algorithm}[H]
@@ -107,6 +109,8 @@ of $O(1)$.
 As previously mentioned, there are many different online poker software's
 available. Here, we will look at some vendors offerings.
 
+\subsubsection{Poker Stars}
+
 \begin{figure}[H]
     \frame{\includegraphics[width=\linewidth]{../images/pokerstars.png}}
     \caption{PokerStars poker software}%
@@ -121,9 +125,11 @@ implementation is not available for inspection. However, their RNG and its
 implementation of the shuffling of cards has been verified by a third party,
 Gaming Laboratories. \parencite{website:gaminglabs2015}
 
+\subsubsection{Holding Nuts}
+
 \begin{figure}[H]
     \frame{\includegraphics[width=\linewidth]{../images/holdingnuts.png}}
-    \caption{HoldingNuts poker software}%
+    \caption{Holding Nuts poker software}%
     \label{fig:holdingnuts}
 \end{figure}
 
