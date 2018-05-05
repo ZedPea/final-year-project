@@ -1,4 +1,4 @@
-\section{Evaluation}
+\section{Evaluation and Conclusion}
 
 \subsection{Further Work}
 There are a few areas of the project that could be improved. One issue is that
@@ -92,3 +92,62 @@ poker however, and furthermore the AI developed performs decently against
 human players. This does allow the users to still attempt to practice their
 skills against it, but without having a strong AI there is only so much they
 can learn before they will be easily outperforming the AI\@.
+
+Through the many experiments conducted, and the careful inspection of
+shuffles and random sources, we have shown that for a poker game to be fair,
+the fundamental key is an unbiased shuffle. This shuffle must produce a uniform
+card distribution, with no dependencies on previous cards.
+This is strongly linked with a fair pseudo
+random number generator implementation - if either the shuffle, or the prng
+is poor, the game will suffer heavily, and can be easily exploited by attackers.
+
+Furthermore, even if the shuffle and the prng are well implemented, if mistakes
+are made such as not reshuffling the deck after every round, players can simply
+recall previous cards, and use this to ``card count''. For this reason, developers
+must implement strong test suites as demonstrated in this report, and they
+must evaluate their implementation in the context of the game, rather than
+simply as separate systems. AI players can be utilised for this as shown in the
+report, to test the whole system rapidly and without biases.
+
+\subsection{Concluding Remarks}
+
+To conclude, the original objectives were:
+
+\begin{itemize}
+\item A Dynamic, Usable GUI\@:
+In Section~\ref{section:uidesign} we discussed how to create a GUI that is dynamic,
+and will change the orientation of the display so the user always appears to
+be orientated in the same seat. This is done without changing the relative
+player positions, and is simply a visual change.
+Secondly, in Section~\ref{section:uiimplementation} we illustrated how we
+can use modern GUI toolkits to create adjustable interfaces, that adapt to
+the resolution available.
+
+\item Secure Pseudo Random Number Generation and Fair Shuffles:
+In Section~\ref{section:shuffletesteroverview}, we showed how a shuffle tester
+can determine how uniform a shuffle is, and the coefficient of variation allowed
+us to easily compare the effect of random sources on these shuffles.
+In Section~\ref{section:randomsources} we compared some different random number
+generators used, and how they can be misused in shuffle algorithms. After
+having looked at these shuffles and random sources, and their nine combinations,
+we can propose the best combination. We suggest a random source of the Fast Mersenne Twister,
+due to its large bit size providing a significant amount of the possible
+total shuffles, and the long cycle length reducing attack vectors when the
+generator is not sufficiently reseeded. For the shuffle algorithm, we will
+suggest the Knuth Shuffle, due to it both being efficient on the CPU and Memory,
+simple to implement (this is always important, as it is much harder to introduce
+bugs in less lines of code), and mathematically proven fair shuffle,
+given a sufficient random number generator.
+
+\item Evaluation Random Number Generation and Shuffles with AI\@:
+In Section~\ref{section:ai} we discussed the implementation of the AI programs
+used to automatically test the system. AI's were used instead of conventional
+players to test the system, both because they can complete games far quicker
+than conventional players and they do not react differently after winning or
+losing (So called tilting). Both of these attributes reduce bias, and strengthen
+the quality of our results. Furthermore, this automated evaluation process
+prevents having to consider ethical issues of encouraging testers to gamble.
+In Section~\ref{automatedaitesting} we showed the result of running our
+automated tests, and that all of the implementations of shuffling were relatively
+fair.
+\end{itemize}

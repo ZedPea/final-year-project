@@ -7,13 +7,15 @@ gambling software has become prevalent in recent years, and developers have to
 be wary of potential pitfalls which can allow malicious actors to exploit the 
 computer executed gameplay to their own benefit.
 
-\subsection{Objective 1: A Usable GUI}
+\subsection{Objective 1: A Dynamic, Usable GUI}
 When playing poker online, the graphical user interface has to be well designed
 to convey all the information that is available to the player at a conventional
 poker table, whilst being easy to make actions, such as raising the bet to
-an arbitrary value.
+an arbitrary value. We will look at how to make the GUI dynamic, to adapt to
+the players position, and easily resizable, to support multiple types of devices,
+and their resolutions.
 
-\subsection{Objective 2: Secure Pseudo Random Number Generation}
+\subsection{Objective 2: Secure Pseudo Random Number Generation and Fair Shuffles}
 Despite random numbers being easy to access in most programming languages, 
 these are in fact not true random numbers, and instead pseudo random numbers, 
 which aim to be sufficiently random for real world use, whilst being generated 
@@ -25,7 +27,7 @@ been developed to allow dealing of multiple hands, with different random number
 sources, and different card picking algorithms, to examine if the spread of
 the dealt cards is statistically sufficient. 
 
-\subsection{Objective 3: Simple AI Poker Players}
+\subsection{Objective 3: Evaluating Random Number Generation and Shuffles with AI}
 An AI is a very valuable tool in the context of poker. It allows users to have
 an offline opponent to practice their skills against, but more importantly
 allows the software system to be easily tested in an automated way, completing

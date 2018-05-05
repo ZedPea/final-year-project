@@ -65,12 +65,12 @@ block box testing to hit some of the rarer code paths and ensure that they
 too are valid.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Experimental Design}
+\subsection{Experimental Design}\label{section:experimentaldesign}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 To test out the effects of the shuffle algorithms and random sources, multiple
 testing programs have been created.
 
-\subsubsection{Shuffle Tester Overview}
+\subsubsection{Shuffle Tester Overview}\label{section:shuffletesteroverview}
 
 The first method is a simple shuffle
 tester. A shuffle method is chosen, along with a source of randomness. Then,
@@ -111,7 +111,7 @@ out the data set is - a uniform shuffle and random source will give a normal
 distribution with a very small standard deviation.
 
 \begin{table}[H]
-    \centering
+    \begin{adjustbox}{center}
     \begin{tabular}{l l l l}
     \toprule
                 & RandomIndex   & Knuth & RandomSort  \\
@@ -121,11 +121,13 @@ distribution with a very small standard deviation.
     MWC256      & 0.0051        & 0.0061& 0.0062      \\ \addlinespace
     \bottomrule
     \end{tabular}
+    \end{adjustbox}
     \caption{The average CV for each shuffle and random source after 100,000
              iterations}
+    \label{table:cv}
 \end{table}
 
-As the above results show, there is not a massive amount of difference between
+As table~\ref{table:cv} shows, there is not a massive amount of difference between
 the CV of the shuffles. We see the RandomIndex algorithm gets consistently low
 CV's, followed by the Knuth algorithm, with RandomSort producing the highest
 CV\@. If we then look at the random sources, we see both MWC256 and Mersenne
@@ -135,7 +137,7 @@ it to be a less effective RNG source. However, all these results are relatively
 close together, and depending on P values used, could be discarded as within
 the margin of error.
 
-\subsubsection{Automated AI Testing}
+\subsubsection{Automated AI Testing}\label{automatedaitesting}
 
 Secondly, to evaluate gameplay effects of these shuffles, two AI's were used.
 The first, was the control AI, and would simply call any bet. The second
@@ -146,7 +148,7 @@ random sources against the control AI, and the win percentage was recorded,
 after 1000 trials of each.
 
 \begin{table}[H]
-    \centering
+    \begin{adjustbox}{center}
     \begin{tabular}{l l l l}
     \toprule
                 & RandomIndex   & Knuth & RandomSort  \\
@@ -156,11 +158,14 @@ after 1000 trials of each.
     MWC256      & 90.1\%        & 89.7\%& 89.6\%      \\ \addlinespace
     \bottomrule
     \end{tabular}
+    \end{adjustbox}
     \caption{The win percentage of the rule-based-ai against the control
              call-any AI for each shuffle and random source}
+    \label{table:winpercentage}
 \end{table}
 
-As we can see, changing the shuffle type or random source doesn't appear to
+As table~\ref{table:winpercentage} shows, changing the shuffle type or random
+source doesn't appear to
 effect the outcome very heavily, which is to be expected - even if the cards
 were drawn in a slightly different way, we would see both players getting
 altered cards, and so the effect would be mitigated. What we can see from this
@@ -177,10 +182,10 @@ shuffle and random source only apply once the current round is finished, to
 prevent corrupting the internal state of the card deck.
 
 %%%%%%%%%%%%%%%%%%%%%%
-\subsection{UI Design}
+\subsection{UI Design}\label{section:ui}
 %%%%%%%%%%%%%%%%%%%%%%
 
-\subsubsection{Design}
+\subsubsection{Design}\label{section:uidesign}
 
 Designing the graphical interface began with simple mockups. A simple
 initial diagram is shown below.
@@ -264,7 +269,7 @@ windows with configurable text, and a quit button. Both the win window
 and the loss window use the same component, with only differing text. This
 keeps the GUI consistent, and thus increases user acceptance.
 
-\subsubsection{Implementation}
+\subsubsection{Implementation}\label{section:uiimplementation}
 
 Once the mockups had been completed the GUI was implemented in QtQML,
 and hooked up to the Haskell code so it was fully usable and could be used
@@ -320,6 +325,22 @@ digest at their own pace.
     \includegraphics[width=\textwidth]{../images/guiwithconsole.png}
     \caption{The GUI with text console}%
     \label{fig:guiwithconsole}
+\end{figure}
+
+Finally, by using relative spacing, rather than absolute pixel values in our
+GUI design, we can make the game window fully adjustable, allowing the user
+to stretch and compress to fit the players screen with ease. This is very
+helpful in adapting the poker game to multiple different devices, such as
+desktops, laptops, and phones. Furthermore, the screen can automatically
+adjust to fill both vertical and horizontal orientations, for example when
+a user flips the orientation of their phone. Figure~\ref{fig:adjustable} shows
+an example of how the interface can be stretched to different shapes.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{../images/adjustable.png}
+    \caption{The adjustability of the GUI}%
+    \label{fig:adjustable}
 \end{figure}
 
 \newpage{}
@@ -449,7 +470,7 @@ once, and provides simple tools to retrieve older versions of the code, for
 example if a bug was introduced in a newer version. Git also provides powerful
 tools to track down the cause of problems introduced into the codebase that
 were not previously there. For example, the git bisect command allows a user
-to go from a known "bad" commit (that introduced a bug for example) and a 
+to go from a known ``bad'' commit (that introduced a bug for example) and a 
 known good commit, and track down which commit in between introduced the bug,
 automatically. This is a big boon for productivity, rather than having to manually
 inspect commit logs.
@@ -468,7 +489,7 @@ development environment, and gives piece of mind to both developers and users.
 \newpage{}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{System Implementation of Simple AI's}
+\subsection{System Implementation of Simple AI's}\label{section:ai}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Three simple AI's were developed during the development of the software system.
 Firstly, an AI framework was created. This handled communication with the
@@ -480,7 +501,7 @@ to be very advantageous later on, when some simple control AI's were wanted
 to be implemented. Two of the three AI's developed are trivial to implement
 and explain.
 
-\subsubsection{Random AI}
+\subsubsection{Random AI}\label{section:randomai}
 
 The first AI, Random AI, would simply choose one of the valid actions at
 random and return it. In the case that it chose raising as the action, it
@@ -512,7 +533,7 @@ We can see here the power of the AI framework, allowing a full client to connect
 to the server, exchange messages with it, and be able to choose how to bet
 in only four simple lines of code.
 
-\subsubsection{Control AI}
+\subsubsection{Control AI}\label{section:controlai}
 
 The second AI, the control AI, is even simpler. This AI simply matches every
 bet, and is used to measure the other AI's performance in a percentage of
@@ -544,7 +565,7 @@ execution.
 
 \vspace{0.3cm}
 
-\subsubsection{Rule Based AI}
+\subsubsection{Rule Based AI}\label{section:rulebasedai}
 
 Finally we have the rule based AI, which is relatively good at the game and
 can beat amateur players at poker. This AI calculates the value of its hand
@@ -621,7 +642,7 @@ who has the strong hand, however this only creates an order, and not a
 numerical value determining the relative strength of a hand.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{System Implementation of Randomness and Shuffling}
+\subsection{System Implementation of Randomness and Shuffling}\label{section:rng}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsubsection{Background}
@@ -634,9 +655,10 @@ commission fee that a casino takes from players in some method, as their way
 of generating revenue.
 
 The implementation of the rake varies between casinos and online poker
-software. Some common ones are in the below table.
+software. Some common ones are shown in table~\ref{table:rake}
 
-\begin{center}
+\begin{table}[H]
+    \begin{adjustbox}{center}
     \begin{tabular}{l l}
     \toprule
     Mechanism           & Description                                               \\
@@ -649,7 +671,10 @@ software. Some common ones are in the below table.
     Subscription Fees   & Players are charged a subscription fee to play            \\
     \bottomrule
     \end{tabular}
-\end{center}
+    \end{adjustbox}
+    \caption{Different implementations of rake}
+    \label{table:rake}
+\end{table}
 
 Finally, some games are rake free, instead generating revenue by driving
 traffic to more profitable businesses. The software developed that this paper
@@ -677,7 +702,7 @@ It was hypothesised that the random number implementation and card picking
 algorithms could effect the cards generated, and potentially lead to a more
 predictable, non random game.
 
-\subsubsection{Shuffle Tester}
+\subsubsection{Shuffle Tester}\label{section:shuffletester}
 
 For this reason, multiple algorithms and
 different sources of randomness has been developed and tested, along with two
@@ -758,7 +783,7 @@ level execution.
 
 \vspace{0.3cm}
 
-\subsubsection{Random Sources}
+\subsubsection{Random Sources}\label{section:randomsources}
 
 The three sources of randomness used are:
 
@@ -768,7 +793,8 @@ The three sources of randomness used are:
     \item Multiply With Carry 256 \parencite{marsaglia2003}
 \end{itemize}
 
-\begin{center}
+\begin{table}[H]
+    \begin{adjustbox}{center}
     \begin{tabular}{l l l}
     \toprule
     Random Source           & Bit Size  & Cycle Length  \\
@@ -778,8 +804,13 @@ The three sources of randomness used are:
     Multiply With Carry 256  & 32        & $ \displaystyle {2}^{8222}$                               \\
     \bottomrule
     \end{tabular}
-\end{center}
+    \end{adjustbox}
+    \caption{The differences of the random sources}
+    \label{table:rng}
+\end{table}
 
+Table~\ref{table:rng} shows the bit sizes and cycle lengths used by the three
+sources of randomness inspected.
 These cycle lengths are sufficiently long that it would be very difficult
 for an attacker to use the knowledge of the period length to their advantage,
 as even the algorithm with the lowest cycle (L'Eucyer's), allows for
